@@ -1,11 +1,7 @@
-import click
-
-from ga4gh.drs.routes.route_object_info import RouteObjectInfo
-from ga4gh.drs.routes.route_fetch_bytes import RouteFetchBytes
-from ga4gh.drs.exceptions.cli_exception import CLIException
+from ga4gh.drs.exceptions.drs_exceptions import CLIException
 from urllib.parse import urlparse
 
-class MainCLI(object):
+class GetCliValidator(object):
 
     def __init__(self, **kwargs):
         self.props = {k: kwargs[k] for k in kwargs.keys()}
