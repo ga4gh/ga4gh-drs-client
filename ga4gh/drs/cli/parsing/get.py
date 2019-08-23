@@ -17,7 +17,7 @@ from ga4gh.drs.cli.methods import get as drsget
 @click.option("--output-metadata", "-m",
     help="File to write object metadata (printed to stdout by default)")
 @click.option("--silent", "-S", is_flag=True,
-    help="Flag. If set, don't print any messages to console")
+    help="Flag. If set, don't output any messages to console or log file")
 @click.option("--suppress-ssl-verify", "-s", is_flag=True,
     help="Flag. If set, suppress ssl certificate verification "
          + "(NOT RECOMMENDED)")
