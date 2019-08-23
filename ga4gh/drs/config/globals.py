@@ -3,6 +3,9 @@ from ga4gh.drs.util.logger import Logger
 from ga4gh.drs.util.method_types.gs import GS
 
 logger = Logger("drs.logger")
+
+HTTPS_BASE_PATH = "/ga4gh/drs/v1"
+
 LOGLEVELS = {
     "DEBUG": logging.DEBUG,
     "INFO": logging.INFO,

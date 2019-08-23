@@ -14,7 +14,7 @@ class Route(object):
         self.set_object_id(object_id)
         self.ssl_verify = not suppress_ssl_verify
         self.authtoken = authtoken
-        self.drs_base_path = "/ga4gh/drs/v1"
+        self.drs_base_path = gl.HTTPS_BASE_PATH
         self.template = "/"
     
     def format_endpoint(self):

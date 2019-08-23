@@ -1,4 +1,5 @@
 from tqdm import tqdm
+import os
 import re
 import requests
 import ga4gh.drs.config.globals as gl
@@ -14,22 +15,35 @@ class GS(MethodType):
             self.__download_by_gsutil
         ]
 
+    def __convert_gs_to_https(self):
+        gs_url = self.access_url.get_url()
+        sub_from = "^gs://"
+        sub_to = "https://storage.googleapis.com/"
+
+        new_url = re.sub(sub_from, sub_to, gs_url)
+        return new_url
+
     def __download_by_https(self):
         submethod_status = gl.DownloadStatus.STARTED
 
         try:
             
             if self.access_url:
-                #TODO: remove drs url modifications
-                suburi = re.sub("^gs://", "https://storage.googleapis.com/", self.access_url.get_url())
-                output_filename = self.get_output_filename()
-                output_file = open(output_filename, "wb")
+                https_url = self.__convert_gs_to_https()
+                output_file_path = self.get_output_file_path()
+                output_file_name = os.path.basename(output_file_path)
+                output_file = open(output_file_path, "wb")
 
                 chunk_size = 8192
                 file_size_bytes = self.drs_obj.size
                 
-                with requests.get(suburi, headers=self.data_accessor.headers, stream=True) as r:
-                    for chunk in tqdm(r.iter_content(chunk_size=chunk_size), total=file_size_bytes/chunk_size):
+                with requests.get(https_url, headers=self.data_accessor.headers,
+                    stream=True) as r:
+                    total = file_size_bytes/chunk_size
+
+                    for chunk in tqdm(
+                        r.iter_content(chunk_size=chunk_size), total=total,
+                        desc=output_file_name):
                         if chunk:
                             output_file.write(chunk)
                         

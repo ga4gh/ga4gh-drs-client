@@ -25,7 +25,7 @@ class MethodType(AccessMethod):
     def set_data_accessor(self, data_accessor):
         self.data_accessor = data_accessor
     
-    def get_output_filename(self):
+    def get_output_file_path(self):
 
         fname = self.drs_obj.name if self.drs_obj.name else self.drs_obj.id
         dirname = self.data_accessor.cli_kwargs["output_dir"]

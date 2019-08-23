@@ -16,7 +16,14 @@ except LookupError:
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-install_requires = ["click", "google-cloud-storage", "PyYAML", "requests", "tqdm"]
+install_requires = [
+    "click",
+    "crc32c",
+    "google-cloud-storage",
+    "PyYAML",
+    "requests",
+    "tqdm"
+]
 
 setuptools.setup(
     name=NAME,

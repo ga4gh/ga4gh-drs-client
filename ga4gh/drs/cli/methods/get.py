@@ -10,16 +10,14 @@ import ga4gh.drs.config.globals as gl
 
 from ga4gh.drs.definitions.object import DRSObject
 from ga4gh.drs.exceptions import drs_exceptions as de
-from ga4gh.drs.util.functions.logging import *
 from ga4gh.drs.routes.route_object_info import RouteObjectInfo
 from ga4gh.drs.routes.route_fetch_bytes import RouteFetchBytes
 from ga4gh.drs.util.data_accessor import DataAccessor
 from ga4gh.drs.util.download_tree import DownloadTree
+from ga4gh.drs.util.download_manager import DownloadManager
+from ga4gh.drs.util.functions.logging import *
 from ga4gh.drs.util.validators.get_cli_validator import GetCliValidator
 from urllib.parse import urlparse
-
-def download_thread(data_accessor):
-    data_accessor.download()
 
 def get(**kwargs):
 
@@ -51,6 +49,7 @@ def get(**kwargs):
         route_obj_kwargs = {k: kwargs[k] for k in 
             ["suppress_ssl_verify", "authtoken"]}
         route_obj_info = RouteObjectInfo(*route_obj_args, **route_obj_kwargs)
+        http_headers = route_obj_info.construct_headers()
         logger.info("issuing request to DRS Object endpoint")
         response = route_obj_info.issue_request()
         
@@ -81,21 +80,19 @@ def get(**kwargs):
             root_object = DRSObject(root_json)
             if not root_object.is_bundle:
                 logger.info("requested object is a single object")
-                data_accessors.append(DataAccessor(root_object))
+                data_accessors.append(
+                    DataAccessor(root_object, kwargs, http_headers))
             else:
                 logger.info("requested object is a bundle, finding all "
                     + "downloadable objects referenced in the bundle tree")
                 download_tree = DownloadTree(root_object)
                 download_tree.recurse_find_leaves(download_tree.drs_object)
-                http_headers = route_obj_info.construct_headers()
                 data_accessors = download_tree.get_data_accessors_for_leaves(
                     kwargs, http_headers)
-
-            download_threads = []
-            for data_accessor in data_accessors:
-                thread = threading.Thread(target=download_thread, args=(data_accessor,))
-                download_threads.append(thread)
-                thread.start()
+            
+            download_manager = DownloadManager(data_accessors)
+            download_manager.execute_thread_pool()
+            logger.info("all downloaded files written to output directory")
 
         else:
             logger.info("object/bundle download not requested")

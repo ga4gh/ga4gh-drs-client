@@ -30,48 +30,8 @@ class DownloadTree(object):
         data_accessors = []
 
         for contents in self.contents_leaves:
-            drs_object = contents.get_corresponding_object(headers)
+            drs_object = contents.get_corresponding_object(cli_kwargs)
             if drs_object:
                 da = DataAccessor(drs_object, cli_kwargs, headers)
                 data_accessors.append(da)
         return data_accessors
-    
-    """
-    def assign_access_methods_to_contents(self, dload_list):
-
-        data_accessors = []
-
-        for contents in dload_list:
-
-            obj = None
-            object_or_content_object = "ContentObject"
-
-            if "access_methods" in contents.keys():
-                if contents["access_methods"]:
-                    contents_is_object = True
-
-            if contents_is_object:
-                obj = contents
-            else:
-                #TODO convert a ContentsObject to an Object
-                print("Contents")
-                print(contents)
-                print("***")
-        
-            data_accessor = DataAccessor()
-            supported_schemes = None
-            supported_schemes_filename = resource_filename(
-                'ga4gh.drs.resources', 'supported_schemes.yml')
-            with open(supported_schemes_filename, "r") as f:
-                supported_schemes = yaml.load(f, Loader=yaml.FullLoader)["schemes"]
-
-            for acc_method_json in obj["access_methods"]:
-                acc_type = acc_method_json["type"]
-
-                if supported_schemes[acc_type]:
-                    acc_method_obj = gl.ACCESS_METHODS[acc_type](acc_method_json)
-                    data_accessor.add_access_method(acc_method_obj)
-            data_accessors.append(data_accessor)
-
-        return data_accessors
-    """

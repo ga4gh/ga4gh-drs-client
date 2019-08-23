@@ -4,6 +4,8 @@ import json
 
 from ga4gh.drs.config.globals import ACCESS_METHOD_TYPES
 from ga4gh.drs.definitions.checksum import Checksum
+from ga4gh.drs.routes.route_object_info import RouteObjectInfo
+from ga4gh.drs.util.functions.url import *
 
 class Object(object):
     
@@ -106,20 +108,22 @@ class ContentsObject(Object):
         self.name = self.__initialize_name
         self.is_bundle = self._Object__initialize_is_bundle()
     
-    def get_corresponding_object(self, headers=None):
+    def get_corresponding_object(self, kwargs):
         matching_obj = None
         
         for drs_uri in self.drs_uri:
             
             try:
                 if matching_obj == None:
-                    #TODO: remove drs url modifications
-                    subbed_uri = re.sub("^drs", "https", drs_uri)
-                    s = subbed_uri.split("/")
-                    new_uri = "/".join(s[:-1])+"/ga4gh/drs/v1/objects/"+s[-1]
+                    base_url, object_id = parse_drs_url(drs_uri)
+                    route_obj_info = RouteObjectInfo(base_url, 
+                        object_id,
+                        kwargs["expand"], 
+                        suppress_ssl_verify=kwargs["suppress_ssl_verify"],
+                        authtoken=kwargs["authtoken"]
+                    )
                     
-                    response = requests.get(new_uri, headers=headers)
-                    # response = requests.get(new_uri)
+                    response = route_obj_info.issue_request()
                     obj_json = json.loads(response.content)
                     drs_obj = DRSObject(obj_json)
                     matching_obj = drs_obj
