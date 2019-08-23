@@ -44,15 +44,11 @@ class DataAccessor(object):
         if hashfunc:
             digest = hashfunc(filepath)
             if exp_digest != digest:
-                print("checksums don't match")
-                print(exp_digest)
-                print(digest)
+                pass
+                # print("checksums don't match")
+                # print(exp_digest)
+                # print(digest)
 
         else:
-            print("no suitable hashing function found for object")
-                
-
-
-
-
-
+            pass
+            # print("no suitable hashing function found for object")
