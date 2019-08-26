@@ -8,8 +8,8 @@ class Checksum(object):
     }
 
     RANKED_HASHFUNCS = [
+        "md5",
         "crc32c",
-        "md5"
     ]
 
     def __init__(self, json):

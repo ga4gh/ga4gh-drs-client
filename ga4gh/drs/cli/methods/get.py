@@ -93,6 +93,7 @@ def get(**kwargs):
             download_manager = DownloadManager(data_accessors)
             download_manager.execute_thread_pool()
             logger.info("all downloaded files written to output directory")
+            download_manager.write_report()
 
         else:
             logger.info("object/bundle download not requested")

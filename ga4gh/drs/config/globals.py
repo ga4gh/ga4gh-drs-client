@@ -23,3 +23,22 @@ class DownloadStatus(object):
     STARTED = 1
     COMPLETED = 2
     FAILED = -1
+
+class ChecksumStatus(object):
+
+    NOT_APPLICABLE = 0
+    PASSED = 1
+    FAILED = -1
+
+DOWNLOAD_STATUS = {
+    DownloadStatus.NOT_STARTED: "NOT STARTED",
+    DownloadStatus.STARTED: "STARTED",
+    DownloadStatus.COMPLETED: "COMPLETED",
+    DownloadStatus.FAILED: "FAILED"
+}
+
+CHECKSUM_STATUS = {
+    ChecksumStatus.NOT_APPLICABLE: "N/A",
+    ChecksumStatus.PASSED: "PASSED",
+    ChecksumStatus.FAILED: "FAILED"
+}

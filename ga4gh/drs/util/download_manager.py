@@ -1,11 +1,20 @@
+import datetime
 import threading
 import time
+import os
+
+from ga4gh.drs.util.functions.logging import *
+import ga4gh.drs.config.globals as gl
 
 class DownloadManager(object):
 
     def __init__(self, data_accessors):
 
         self.data_accessors = data_accessors
+        self.report_file = os.path.join(
+            self.data_accessors[0].cli_kwargs["output_dir"], 
+            "drs_download_report.txt"
+        )
         self.download_threads = self.__initialize_download_threads()
         self.threads_status = ["NOTSTARTED" for i in self.download_threads]
         self.has_started = [False for i in self.download_threads]
@@ -13,8 +22,9 @@ class DownloadManager(object):
     
     def download_thread_func(self, data_accessor):
         data_accessor.download()
-        if data_accessor.cli_kwargs["validate_checksum"]:
-            data_accessor.validate_checksum()
+        if data_accessor.download_status == gl.DownloadStatus.COMPLETED:
+            if data_accessor.cli_kwargs["validate_checksum"]:
+                data_accessor.validate_checksum()
 
     def execute_thread_pool(self):
 
@@ -37,6 +47,33 @@ class DownloadManager(object):
                     all_threads_finished = True
             
             time.sleep(5)
+    
+    def write_report(self):
+
+        kwargs = self.data_accessors[0].cli_kwargs
+        iso_format = "%Y-%m-%dT%H:%M:%S"
+
+        header_template = "# DRS v1 Client Download Report\n" \
+            + "# Report Generated: {now_strftime}\n" \
+            + "# Arguments -> URL: {url}\tOBJECT_ID: {object_id}\n" \
+            + "# Options: {options}"
+        format_dict = {
+            "now_strftime": datetime.datetime.now().strftime(iso_format),
+            "url": kwargs["url"],
+            "object_id": kwargs["object_id"],
+            "options": str(sanitize(kwargs))
+        }
+        header = header_template.format(**format_dict)
+
+        table_header = "\t".join(
+            ["ID", "Name", "Output File", "Download Status", "Checksum Status",
+            "Hash Algorithm", "Expected", "Observed"]
+        )
+
+        content = [header, table_header]
+        for data_accessor in self.data_accessors:
+            content.append(data_accessor.report_line())
+        open(self.report_file, "w").write("\n".join(content) + "\n")
 
     def __initialize_download_threads(self):
         download_threads = []

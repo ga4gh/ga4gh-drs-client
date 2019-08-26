@@ -9,6 +9,11 @@ class DataAccessor(object):
         self.cli_kwargs = cli_kwargs
         self.headers = headers
         self.download_status = gl.DownloadStatus.NOT_STARTED
+        self.checksum_status = gl.ChecksumStatus.NOT_APPLICABLE
+        self.checksum_algo = "N/A"
+        self.checksum_exp = "N/A"
+        self.checksum_obs = "N/A"
+        self.logger = gl.logger
     
     def download(self):
         self.download_status = gl.DownloadStatus.STARTED
@@ -32,23 +37,44 @@ class DataAccessor(object):
         
         hashfunc = None
         hashfunc_not_found = True
-        exp_digest = None
-        digest = None
         for hashfunc_key in hashfuncs_l:
             if hashfunc_not_found:
                 if hashfunc_key in checksums_by_type.keys():
+                    self.checksum_algo = hashfunc_key
                     hashfunc = hashfuncs_d[hashfunc_key]
-                    exp_digest = checksums_by_type[hashfunc_key].checksum
+                    self.checksum_exp = checksums_by_type[hashfunc_key].checksum
                     hashfunc_not_found = False
         
         if hashfunc:
-            digest = hashfunc(filepath)
-            if exp_digest != digest:
-                pass
-                # print("checksums don't match")
-                # print(exp_digest)
-                # print(digest)
+            self.checksum_obs = str(hashfunc(filepath))
+            if str(self.checksum_exp) != str(self.checksum_obs):
+                msg = "output file {filepath} expected {type} checksum: " \
+                    + "{expected} does not match observed: {observed}"
+                format_dict = {"filepath": filepath, "type": self.checksum_algo,
+                    "expected": self.checksum_exp, 
+                    "observed": self.checksum_obs}
+                self.logger.error(msg.format(**format_dict))
+                self.checksum_status = gl.ChecksumStatus.FAILED
+            else:
+                self.checksum_status = gl.ChecksumStatus.PASSED
 
         else:
-            pass
-            # print("no suitable hashing function found for object")
+            msg = "could not perform checksum validation for {filepath}, " \
+                + "no suitable hashing algorithm found"
+            format_dict = {"filepath": filepath}
+            self.logger.warning(msg.format(**format_dict))
+            self.checksum_status = gl.ChecksumStatus.FAILED
+    
+    def report_line(self):
+        fields = [
+            self.drs_object.id,
+            self.drs_object.name if self.drs_object.name else "N/A",
+            self.drs_object.access_methods[0].get_output_file_path(), # outfile
+            gl.DOWNLOAD_STATUS[self.download_status],
+            gl.CHECKSUM_STATUS[self.checksum_status],
+            self.checksum_algo,
+            self.checksum_exp,
+            self.checksum_obs
+        ]
+
+        return "\t".join(fields)

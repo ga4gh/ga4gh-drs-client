@@ -19,7 +19,6 @@ with open("README.md", "r") as fh:
 install_requires = [
     "click",
     "crc32c",
-    "google-cloud-storage",
     "PyYAML",
     "requests",
     "tqdm"
