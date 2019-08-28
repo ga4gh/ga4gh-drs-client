@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+"""Module ga4gh.drs.cli.parsing.get.py
+Click arguments expected by and passed to the 'get' command 
+"""
+
 import click 
 from ga4gh.drs.cli.methods import get as drsget
 
@@ -27,4 +32,10 @@ from ga4gh.drs.cli.methods import get as drsget
     type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR"]),
     help="Control verbosity of logging")
 def get(**kwargs):
+    """Executes the drs get command after parsing command-line args/opts
+
+    Arguments:
+        kwargs (dict): command-line arguments parsed via Click package
+    """
+
     drsget.get(**kwargs)

@@ -1,16 +1,32 @@
+# -*- coding: utf-8 -*-
+"""Module ga4gh.drs.definitions.object.py
+Contains class representations of "6.4 ContentsObject" and "6.6 Object" objects 
+outlined in DRS specification. Object represents a DRS object returned by a
+request for a specific OBJECT_ID. ContentObject is a pared down representation
+of an Object, primarily providing the url to access a full Object
+"""
+
+import json
 import re
 import requests
-import json
-
 from ga4gh.drs.config.globals import ACCESS_METHOD_TYPES
 from ga4gh.drs.definitions.checksum import Checksum
 from ga4gh.drs.routes.route_object_info import RouteObjectInfo
 from ga4gh.drs.util.functions.url import *
 
 class Object(object):
+    """Abstract parent class of DRSObject and ContentsObject."""
     
     def __initialize_contents(self):
+        """Initializes value of "contents" property
+
+        Returns:
+            (list): array of ContentsObjects, one for each entry in "contents"
+        """
         
+        # The value of the 'contents' property is either null (for singular 
+        # objects), or an array of ContentObject JSON (for bundles). If 
+        # an array, create a ContentObject for each element in the array
         contents = []
         if "contents" in self.json.keys():
             if self.json["contents"]:
@@ -21,11 +37,43 @@ class Object(object):
         return contents
     
     def __initialize_is_bundle(self):
+        """Initializes value of "is_bundle" property
+
+        Returns:
+            (bool): True if object is a bundle, False if singular object
+        """
+
+        # if the object's 'contents' property is an empty list, then this is a
+        # singular object, but if 'contents' is populated, then this is a bundle
         return True if len(self.contents) > 0 else False
 
 class DRSObject(Object):
+    """DRS object returned by a request for a specific OBJECT_ID
+
+    Attributes:
+        json (dict): parsed DRSObject JSON, used to set other attributes
+        access_methods (list): list of AccessMethods used to access bytes
+        aliases (list): string aliases for this object
+        checksums (list): list of Checksums, digest values for object bytes
+        contents (list): list of child ContentObjects for bundle
+        created_time (str): time object was created
+        description (str): human readable description
+        id (str): unique identifier of this object
+        mime_type (str): optional mime-type of the object
+        name (str): optional object name
+        self_uri (str): drs URI used to access this object
+        size (int): object blob size in bytes
+        updated_time (str): optional date string object was last updated
+        version (str): object version
+        is_bundle (bool): True if object is bundle, False if singular object
+    """
 
     def __init__(self, json):
+        """Instantiates a DRSObject object
+
+        Arguments:
+            json (dict): parsed DRSObject JSON, used to set other attributes
+        """
 
         self.json = json
         self.access_methods = self.__initialize_access_methods()
@@ -44,7 +92,15 @@ class DRSObject(Object):
         self.is_bundle = self._Object__initialize_is_bundle()
     
     def __initialize_access_methods(self):
+        """Initializes value of access_methods property
+
+        Returns:
+            (list): list of AccessMethod subclasses according to type 
+        """
         
+        # for each JSON element in the 'access_methods' array, create an
+        # AccessMethod subclass. The exact subclass instantiated is based on
+        # the "type" property of the AccessMethod JSON 
         access_methods = []
         if "access_methods" in self.json.keys():
             if self.json["access_methods"]:
@@ -56,51 +112,136 @@ class DRSObject(Object):
         return access_methods
     
     def __initialize_aliases(self):
+        """Initializes value of aliases property
+
+        Returns:
+            (list): aliases
+        """
+
         return self.json["aliases"] if "aliases" in self.json.keys() else None
     
     def __initialize_checksums(self):
+        """Initializes value of checksums property
+
+        Returns:
+            (list): Checksum objects
+        """
+
+        # creates a Checksum object for each element in the JSON array under
+        # "checksums"
         checksums = []
         for checksum_json in self.json["checksums"]:
             checksum_obj = Checksum(checksum_json)
             checksums.append(checksum_obj)
+
         return checksums
     
     def __initialize_created_time(self):
+        """Initializes value of created_time property
+
+        Returns:
+            (str): created time
+        """
+
         return self.json["created_time"]
     
     def __initialize_description(self):
+        """Initializes value of description property
+
+        Returns:
+            (str): description
+        """
+
         return self.json["description"] \
                if "description" in self.json.keys() \
                else None
     
     def __initialize_id(self):
+        """Initializes value of id property
+
+        Returns:
+            (str): id
+        """
+
         return self.json["id"]
     
     def __initialize_mime_type(self):
+        """Initializes value of mime_type property
+
+        Returns:
+            (str): mime-type
+        """
+
         return self.json["mime_type"] \
                if "mime_type" in self.json.keys() \
                else None
     
     def __initialize_name(self):
+        """Initializes value of name property
+
+        Returns:
+            (str): name
+        """
+
         return self.json["name"] if "name" in self.json.keys() else None
     
     def __initialize_self_uri(self):
+        """Initializes value of self_uri property
+
+        Returns:
+            (str): self_uri
+        """
+
         return self.json["self_uri"]
     
     def __initialize_size(self):
+        """Initializes value of size property
+
+        Returns:
+            (int): object size
+        """
+
         return self.json["size"]
     
     def __initialize_updated_time(self):
+        """Initializes value of updated_time property
+
+        Returns:
+            (str): updated time
+        """
+
         return self.json["updated_time"] \
                if "updated_time" in self.json.keys() \
                else None
     
     def __initialize_version(self):
+        """Initializes value of version property
+
+        Returns:
+            (str): version
+        """
+
         return self.json["version"] if "version" in self.json.keys() else None
 
 class ContentsObject(Object):
+    """Pared down object stored under "contents" property of DRSObject
+
+    Attributes:
+        json (dict): parsed ContentsObject JSON, used to set other attributes
+        contents (list): list of child ContentObjects for bundle
+        drs_uri (list): DRS urls/identifiers to retrieve this DRS Object
+        id (str): unique identifier of this ContentsObject/DRSObject
+        name (str): name of the ContentsObject
+        is_bundle (bool): True if object is bundle, False if singular object
+    """
 
     def __init__(self, json):
+        """Instantiates a ContentsObject objects
+
+        Arguments:
+            json (dict): parsed ContentsObject JSON, used to set attributes
+        """
+
         self.json = json
         self.contents = self._Object__initialize_contents()
         self.drs_uri = self.__initialize_drs_uri()
@@ -109,11 +250,23 @@ class ContentsObject(Object):
         self.is_bundle = self._Object__initialize_is_bundle()
     
     def get_corresponding_object(self, kwargs):
-        matching_obj = None
+        """Get the full matching DRSObject for this ContentsObject
+
+        Arguments:
+            kwargs (dict): cli arguments/options
         
+        Returns:
+            (DRSObject): full DRSObject matching ContentsObject
+        """
+
+        matching_obj = None
+
         for drs_uri in self.drs_uri:
-            
             try:
+                # if matching object hasn't been found, iterate through all 
+                # uris in drs_uri list. Try to get DRSObject JSON from the 
+                # "object info" route, using the base url and object_id
+                # of the drs uri
                 if matching_obj == None:
                     base_url, object_id = parse_drs_url(drs_uri)
                     route_obj_info = RouteObjectInfo(base_url, 
@@ -133,10 +286,28 @@ class ContentsObject(Object):
         return matching_obj
     
     def __initialize_drs_uri(self):
+        """Initializes value of drs_uri property
+
+        Returns:
+            (list): drs uri(s)
+        """
+
         return self.json["drs_uri"] if "drs_uri" in self.json.keys() else None
     
     def __initialize_id(self):
+        """Initializes value of id property
+
+        Returns:
+            (str): id
+        """
+
         return self.json["id"] if "id" in self.json.keys() else None
     
     def __initialize_name(self):
+        """Initializes value of name property
+
+        Returns:
+            (str): name
+        """
+
         return self.json["name"]
