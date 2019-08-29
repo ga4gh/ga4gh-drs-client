@@ -112,7 +112,7 @@ def get(**kwargs):
             # if bundle, program needs to find all terminal nodes (objects)
             # in the bundle hierarchy
             data_accessors = []
-            root_object = DRSObject(root_json)
+            root_object = DRSObject(root_json, kwargs)
             if not root_object.is_bundle:
                 logger.info("requested object is a single object")
                 data_accessors.append(
@@ -130,7 +130,7 @@ def get(**kwargs):
             
             # create the download manager, which accepts all the data accessors
             # and initiates/manages download threads for each accessor
-            download_manager = DownloadManager(data_accessors)
+            download_manager = DownloadManager(data_accessors, kwargs)
             download_manager.execute_thread_pool()
             logger.info("all downloaded files written to output directory")
             download_manager.write_report()

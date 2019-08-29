@@ -10,6 +10,7 @@ import ga4gh.drs.config.globals as gl
 import threading
 import time
 import os
+from concurrent.futures import ThreadPoolExecutor
 from ga4gh.drs.util.functions.logging import *
 
 class DownloadManager(object):
@@ -17,6 +18,7 @@ class DownloadManager(object):
 
     Attributes:
         data_accessors (list): list of instantiated DataAccessors
+        cli_kwargs (dict): command-line arugments/options
         report_file (str): path to output download report file
         download_threads (list): list of DataAccessor download threads
         threads_status (list): current status of each thread
@@ -24,14 +26,16 @@ class DownloadManager(object):
         max_threads (int): max executable threads
     """
 
-    def __init__(self, data_accessors):
+    def __init__(self, data_accessors, cli_kwargs):
         """Instantiates a DownloadManager object
 
         Arguments:
             data_accessors (list): list of instantiated DataAccessors
+            cli_kwargs (dict): command-line arguments/options
         """
 
         self.data_accessors = data_accessors
+        self.cli_kwargs = cli_kwargs
         self.report_file = os.path.join(
             self.data_accessors[0].cli_kwargs["output_dir"], 
             "drs_download_report.txt"
@@ -39,7 +43,7 @@ class DownloadManager(object):
         self.download_threads = self.__initialize_download_threads()
         self.threads_status = ["NOTSTARTED" for i in self.download_threads]
         self.has_started = [False for i in self.download_threads]
-        self.max_threads = 2
+        self.max_workers = 3
     
     def download_thread_func(self, data_accessor):
         """Thread worker function for DataAccessor download
@@ -65,6 +69,10 @@ class DownloadManager(object):
         threads are shown to be finished.
         """
 
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            executor.map(self.download_thread_func, self.data_accessors)
+
+        """
         all_threads_finished = False
         while not all_threads_finished:
             for i in range(0, len(self.threads_status)):
@@ -88,6 +96,7 @@ class DownloadManager(object):
                     all_threads_finished = True
             
             time.sleep(5)
+        """
     
     def write_report(self):
         """Write the download status report to the output file"""

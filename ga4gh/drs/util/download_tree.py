@@ -60,7 +60,7 @@ class DownloadTree(object):
 
         data_accessors = []
         for contents in self.contents_leaves:
-            drs_object = contents.get_corresponding_object(cli_kwargs)
+            drs_object = contents.get_corresponding_object()
             if drs_object:
                 da = DataAccessor(drs_object, cli_kwargs, headers)
                 data_accessors.append(da)

@@ -20,15 +20,16 @@ class GS(MethodType):
         download_submethods (list): multiple methods to attempt byte download
     """
     
-    def __init__(self, json, drs_obj):
+    def __init__(self, json, drs_obj, cli_kwargs):
         """Instantiates a GS object
 
         Arguments:
             json (dict): parsed AccessMethod JSON, used to set other attributes
             drs_obj (DRSObject): reference to parent DRSObject object
+            cli_kwargs (dict): command-line arguments
         """
 
-        super(GS, self).__init__(json, drs_obj)
+        super(GS, self).__init__(json, drs_obj, cli_kwargs)
         self.download_submethods = [
             self.__download_by_https,
             self.__download_by_gsutil
@@ -58,12 +59,8 @@ class GS(MethodType):
 
         # convert the gs url to https, and attempt to download it via
         # GET request
-        submethod_status = gl.DownloadStatus.STARTED
-        https_url = self.__convert_gs_to_https()        
-        with requests.get(https_url, headers=self.data_accessor.headers,
-            stream=True) as r:
-            iterator_func = r.iter_content
-            self.download_write_stream(iterator_func, write_config)
+        https_url = self.__convert_gs_to_https()
+        self._MethodType__download_by_requests_package(https_url, write_config)
     
     @DownloadSubmethod()
     def __download_by_gsutil(self, write_config):

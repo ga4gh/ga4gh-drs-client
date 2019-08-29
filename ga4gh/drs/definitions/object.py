@@ -15,7 +15,23 @@ from ga4gh.drs.routes.route_object_info import RouteObjectInfo
 from ga4gh.drs.util.functions.url import *
 
 class Object(object):
-    """Abstract parent class of DRSObject and ContentsObject."""
+    """Parent class of DRSObject and ContentsObject.
+
+    Attributes:
+        json (dict): parsed Object JSON, used to set other attributes
+        cli_kwargs (dict): command-line arguments/options
+    """
+
+    def __init__(self, json, cli_kwargs):
+        """Instantiates an Object object
+
+        Arguments:
+            json (dict): parsed Object JSON, used to set other attributes
+            cli_kwargs (dict): command-line arguments/options
+        """
+
+        self.json = json
+        self.cli_kwargs = cli_kwargs
     
     def __initialize_contents(self):
         """Initializes value of "contents" property
@@ -31,7 +47,8 @@ class Object(object):
         if "contents" in self.json.keys():
             if self.json["contents"]:
                 for contents_json in self.json["contents"]:
-                    new_contents = ContentsObject(contents_json)
+                    new_contents = ContentsObject(
+                        contents_json, self.cli_kwargs)
                     contents.append(new_contents)
         
         return contents
@@ -51,7 +68,6 @@ class DRSObject(Object):
     """DRS object returned by a request for a specific OBJECT_ID
 
     Attributes:
-        json (dict): parsed DRSObject JSON, used to set other attributes
         access_methods (list): list of AccessMethods used to access bytes
         aliases (list): string aliases for this object
         checksums (list): list of Checksums, digest values for object bytes
@@ -68,14 +84,15 @@ class DRSObject(Object):
         is_bundle (bool): True if object is bundle, False if singular object
     """
 
-    def __init__(self, json):
+    def __init__(self, json, cli_kwargs):
         """Instantiates a DRSObject object
 
         Arguments:
             json (dict): parsed DRSObject JSON, used to set other attributes
+            cli_kwargs (dict): command-line arguments/options
         """
 
-        self.json = json
+        super(DRSObject, self).__init__(json, cli_kwargs)
         self.access_methods = self.__initialize_access_methods()
         self.aliases = self.__initialize_aliases()
         self.checksums = self.__initialize_checksums()
@@ -105,9 +122,11 @@ class DRSObject(Object):
         if "access_methods" in self.json.keys():
             if self.json["access_methods"]:
                 for access_json in self.json["access_methods"]:
-                    access_class = ACCESS_METHOD_TYPES[access_json["type"]]
-                    access_obj = access_class(access_json, self)
-                    access_methods.append(access_obj)
+                    if access_json["type"] in ACCESS_METHOD_TYPES.keys():
+                        access_class = ACCESS_METHOD_TYPES[access_json["type"]]
+                        access_obj = access_class(
+                            access_json, self, self.cli_kwargs)
+                        access_methods.append(access_obj)
 
         return access_methods
     
@@ -227,7 +246,6 @@ class ContentsObject(Object):
     """Pared down object stored under "contents" property of DRSObject
 
     Attributes:
-        json (dict): parsed ContentsObject JSON, used to set other attributes
         contents (list): list of child ContentObjects for bundle
         drs_uri (list): DRS urls/identifiers to retrieve this DRS Object
         id (str): unique identifier of this ContentsObject/DRSObject
@@ -235,21 +253,22 @@ class ContentsObject(Object):
         is_bundle (bool): True if object is bundle, False if singular object
     """
 
-    def __init__(self, json):
+    def __init__(self, json, cli_kwargs):
         """Instantiates a ContentsObject objects
 
         Arguments:
             json (dict): parsed ContentsObject JSON, used to set attributes
+            cli_kwargs (dict): command-line arguments/options
         """
 
-        self.json = json
+        super(ContentsObject, self).__init__(json, cli_kwargs)
         self.contents = self._Object__initialize_contents()
         self.drs_uri = self.__initialize_drs_uri()
         self.id = self.__initialize_id()
         self.name = self.__initialize_name
         self.is_bundle = self._Object__initialize_is_bundle()
     
-    def get_corresponding_object(self, kwargs):
+    def get_corresponding_object(self):
         """Get the full matching DRSObject for this ContentsObject
 
         Arguments:
@@ -260,6 +279,7 @@ class ContentsObject(Object):
         """
 
         matching_obj = None
+        kwargs = self.cli_kwargs
 
         for drs_uri in self.drs_uri:
             try:
@@ -278,7 +298,7 @@ class ContentsObject(Object):
                     
                     response = route_obj_info.issue_request()
                     obj_json = json.loads(response.content)
-                    drs_obj = DRSObject(obj_json)
+                    drs_obj = DRSObject(obj_json, kwargs)
                     matching_obj = drs_obj
             except Exception as e:
                 pass

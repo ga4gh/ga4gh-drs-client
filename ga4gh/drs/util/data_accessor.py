@@ -6,13 +6,14 @@ until the download has completed successfully.
 """
 
 import ga4gh.drs.config.globals as gl
+import os
 from ga4gh.drs.definitions.checksum import Checksum
 
 class DataAccessor(object):
     """Manages the byte download of a single DRSObject
 
     Attributes:
-        drs_object (DRSObject): reference to DRSObject to be downloaded
+        drs_obj (DRSObject): reference to DRSObject to be downloaded
         cli_kwargs (dict): cli args/options
         headers (dict): headers to be supplied to download request
         download_status (int): current status of the file download
@@ -23,16 +24,16 @@ class DataAccessor(object):
         logger (Logger): global logger
     """
     
-    def __init__(self, drs_object, cli_kwargs, headers):
+    def __init__(self, drs_obj, cli_kwargs, headers):
         """Instantiates a DataAccessor object
 
         Arguments:
-            drs_object (DRSObject): reference to DRSObject
+            drs_obj (DRSObject): reference to DRSObject
             cli_kwargs (dict): cli args/options
             headers (dict): headers to be supplied to download request
         """
 
-        self.drs_object = drs_object
+        self.drs_obj = drs_obj
         self.cli_kwargs = cli_kwargs
         self.headers = headers
         self.download_status = gl.DownloadStatus.NOT_STARTED
@@ -56,6 +57,12 @@ class DataAccessor(object):
         # download by any access method has started
         self.download_status = gl.DownloadStatus.STARTED
 
+        no_method_msg_template = "{objid} has no valid access methods with " \
+            + "which to attempt download. Status: {status}"
+        start_msg_template = "{objid}: attempting download by '{scheme}' scheme"
+        end_msg_template = "{objid}: finished download attempt by '{scheme}' " \
+            + "scheme. Status: {status}"
+
         # for each access method, execute the 'download_retry_loop' function,
         # if the access method is successful, then this loop will break
         # if not, the next access method is attempted
@@ -64,13 +71,30 @@ class DataAccessor(object):
         # if all access methods are exhausted without success, the data
         # accessor's download status is set to 'FAILED'
         access_method_status = gl.DownloadStatus.NOT_STARTED
-        for access_method in self.drs_object.access_methods:
+        if len(self.drs_obj.access_methods) < 1:
+            access_method_status = gl.DownloadStatus.FAILED
+            msg = no_method_msg_template.format(objid=self.drs_obj.id,
+                status=gl.DOWNLOAD_STATUS[access_method_status])
+            self.logger.debug(msg)
+
+        for access_method in self.drs_obj.access_methods:
             if access_method_status != gl.DownloadStatus.COMPLETED:
+                start_msg = start_msg_template.format(
+                    objid=self.drs_obj.id, scheme=access_method.type)
+                self.logger.debug(start_msg)
+                
                 access_method_status = gl.DownloadStatus.STARTED
                 access_method.set_data_accessor(self)
                 access_method.download_retry_loop()
                 access_method_status = access_method.download_status
-        
+                
+                end_msg = end_msg_template.format(
+                    objid=self.drs_obj.id,
+                    scheme=access_method.type, 
+                    status=gl.DOWNLOAD_STATUS[access_method_status]
+                )
+                self.logger.debug(end_msg)
+
         self.download_status = access_method_status
     
     def validate_checksum(self):
@@ -84,11 +108,11 @@ class DataAccessor(object):
         status based on the results
         """
 
-        filepath = self.drs_object.access_methods[0].get_output_file_path()
+        filepath = self.get_output_file_path()
 
         hashfuncs_d = Checksum.HASHFUNCS
         hashfuncs_l = Checksum.RANKED_HASHFUNCS
-        checksums_by_type = {c.type: c for c in self.drs_object.checksums}
+        checksums_by_type = {c.type: c for c in self.drs_obj.checksums}
         
         # find the most suitable hashing algorithm, for each algorithm in the 
         # ranked list, check if the DRSObject has a checksum of that type 
@@ -127,6 +151,19 @@ class DataAccessor(object):
             format_dict = {"filepath": filepath}
             self.logger.warning(msg.format(**format_dict))
             self.checksum_status = gl.ChecksumStatus.FAILED
+
+    def get_output_file_path(self):
+        """Get the path of download file destination on local machine
+
+        Returns:
+            (str): destination of downloaded file
+        """
+
+        fname = self.drs_obj.name if self.drs_obj.name else self.drs_obj.id
+        dirname = self.cli_kwargs["output_dir"]
+        if dirname:
+            fname = os.path.join(dirname, fname)
+        return fname
     
     def report_line(self):
         """Get data accessor status as a line for the report
@@ -136,9 +173,9 @@ class DataAccessor(object):
         """
 
         fields = [
-            self.drs_object.id,
-            self.drs_object.name if self.drs_object.name else "N/A",
-            self.drs_object.access_methods[0].get_output_file_path(), # outfile
+            self.drs_obj.id,
+            self.drs_obj.name if self.drs_obj.name else "N/A",
+            self.get_output_file_path(), # outfile
             gl.DOWNLOAD_STATUS[self.download_status],
             gl.CHECKSUM_STATUS[self.checksum_status],
             self.checksum_algo,
