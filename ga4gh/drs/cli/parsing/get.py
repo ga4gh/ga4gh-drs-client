@@ -3,7 +3,8 @@
 Click arguments expected by and passed to the 'get' command 
 """
 
-import click 
+import click
+import os
 from ga4gh.drs.cli.methods import get as drsget
 
 @click.command()
@@ -17,7 +18,7 @@ from ga4gh.drs.cli.methods import get as drsget
     help="Flag. If set, program will recursively traverse inner bundles within "
          + "the root bundle")
 @click.option("--logfile", "-l", help="File to which logs should be written")
-@click.option("--output-dir", "-o",
+@click.option("--output-dir", "-o", default=os.getcwd(),
     help="Directory to write downloaded files")
 @click.option("--output-metadata", "-m",
     help="File to write object metadata (printed to stdout by default)")

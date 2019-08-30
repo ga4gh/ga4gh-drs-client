@@ -7,20 +7,13 @@ client.
 As a prerequisite, python 3 and pip must be installed on your system. The 
 application can be installed by running the following from the command line. 
 
-1. Clone the latest build from https://github.com/ga4gh/ga4gh-drs-client.git
+1. Install latest distribution from the Python Package Index (PyPI)
 
 .. code-block:: bash
 
-    git clone https://github.com/ga4gh/ga4gh-drs-client.git
+    pip install ga4gh-drs-client
 
-2. Enter ga4gh-drs-client directory and install
-
-.. code-block:: bash
-
-    cd ga4gh-drs-client
-    python setup.py install
-
-3. Confirm installation by executing the drs command
+2. Confirm installation by executing the drs command
 
 .. code-block:: bash
 
