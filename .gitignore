@@ -1,5 +1,6 @@
 *.egg-info/
 .env
+__pycache__
 build/
 dist/
 scripts/*
