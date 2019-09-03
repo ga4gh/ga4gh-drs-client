@@ -2,6 +2,6 @@
 .env
 build/
 dist/
-scripts/output/*
+scripts/*
 
-!scripts/output/.file
+!scripts/*.sh

@@ -33,10 +33,6 @@ from ga4gh.drs.cli.methods import get as drsget
     type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR"]),
     help="Control verbosity of logging")
 def get(**kwargs):
-    """Executes the drs get command after parsing command-line args/opts
-
-    Arguments:
-        kwargs (dict): command-line arguments parsed via Click package
-    """
+    """get an object or bundle from a DRS service"""
 
     drsget.get(**kwargs)

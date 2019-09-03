@@ -23,6 +23,8 @@ Click `here <installation.html>`_ for instructions on how to install the client.
 
    installation
    usage
+   report
+   scripts
 
 Indices and tables
 ==================

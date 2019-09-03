@@ -36,8 +36,14 @@ def get(**kwargs):
 
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     exit_code = 0
+    logger = None
 
     try:
+
+        # validate get command cli args beyond what is handled by click
+        # eg. check URL is in valid format 
+        validator = GetCliValidator(**kwargs)
+        validator.validate_all()
 
         # set up logger, loglevel set according to verbosity argument, and
         # silent option. If silent, logger will not output anything
@@ -57,12 +63,6 @@ def get(**kwargs):
                 + "turning verification on unless it is necessary that it be "
                 + "off.")
 
-        # validate get command cli args beyond what is handled by click
-        # eg. check URL is in valid format 
-        logger.info("validating command-line arguments")
-        validator = GetCliValidator(**kwargs)
-        validator.validate_args()
-
         # create the first request object, which requests the object under
         # the cli-specified OBJECT_ID
         route_obj_args = [kwargs[k] for k in ["url", "object_id", "expand"]]
@@ -71,7 +71,12 @@ def get(**kwargs):
         route_obj_info = RouteObjectInfo(*route_obj_args, **route_obj_kwargs)
         http_headers = route_obj_info.construct_headers()
         logger.info("issuing request to DRS Object endpoint")
-        response = route_obj_info.issue_request()
+        response = None
+        try:
+            response = route_obj_info.issue_request()
+        except Exception as e:
+            raise de.CLIException("Could not find any service/host by "
+                                  "specified URL")
         
         # check if response was OK, or if it returned an error code
         # if program receives an error code, then do not proceed with 
@@ -139,12 +144,21 @@ def get(**kwargs):
             logger.info("object/bundle download not requested")
                 
     except de.DRSException as e:
-        logger.error(str(e))
+        if logger:
+            logger.error(str(e))
+        else:
+            print(str(e))
         exit_code = 1
     except Exception as e:
-        logger.error(str(e))
+        if logger:
+            logger.error(str(e))
+        else:
+            print(str(e))
         exit_code = 1
         traceback.print_exc()
     finally:
-        logger.info("exiting with exit code: " + str(exit_code))
+        if logger:
+            logger.info("exiting with exit code: " + str(exit_code))
+        else:
+            print("exiting with exit code: " + str(exit_code))
         sys.exit(exit_code)

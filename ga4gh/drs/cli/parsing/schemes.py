@@ -8,7 +8,7 @@ import click
 
 @click.group()
 def schemes():
-    """Houses the 'schemes' group of commands"""
+    """view/update supported url schemes"""
 
     pass
 
