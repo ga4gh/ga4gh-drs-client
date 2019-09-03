@@ -9,4 +9,13 @@ by the [Global Alliance for Genomics and Health](https://www.ga4gh.org/), serves
 API framework to allow for interoperability of datasets hosted at different
 institutions.
 
+## Installation and Usage
+
 Please review the [GA4GH DRS Client Documentation](https://ga4gh-drs-client.readthedocs.io/en/latest/) for instructions on how to install and use the command-line application.
+
+## Additional Resources
+
+1. [PyPI](https://pypi.org/project/ga4gh-drs-client/) - The DRS Client is 
+available on the Python Package Index (PyPI)
+2. [Docker](https://hub.docker.com/r/jbadams/ga4gh-drs-client) - The DRS Client
+can be run through a preconfigured image

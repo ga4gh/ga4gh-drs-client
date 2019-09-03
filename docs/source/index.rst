@@ -17,6 +17,12 @@ datasets hosted at different institutions.
 
 Click `here <installation.html>`_ for instructions on how to install the client.
 
+Additional Resources
+--------------------
+
+1. `PyPI <https://pypi.org/project/ga4gh-drs-client/>`_ - The DRS Client is available on the Python Package Index (PyPI)
+2. `Docker <https://hub.docker.com/r/jbadams/ga4gh-drs-client>`_ - The DRS Client can be run through a preconfigured image
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
