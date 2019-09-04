@@ -29,6 +29,7 @@ Additional Resources
 
    installation
    usage
+   schemes
    report
    scripts
 

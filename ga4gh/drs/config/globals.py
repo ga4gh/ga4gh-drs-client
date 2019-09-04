@@ -35,6 +35,11 @@ ACCESS_METHOD_TYPES = {
     "https": HTTPS
 }
 
+ACCESS_METHOD_TYPES_DESC = {
+    "gs": "Google Cloud Storage",
+    "https": "Hypertext Transfer Protocol Secure"
+}
+
 class DownloadStatus(object):
     """Contains int representations of different download states"""
 

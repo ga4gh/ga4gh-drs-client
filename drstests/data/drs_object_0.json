@@ -1,0 +1,35 @@
+{
+  "id": "abc123",
+  "name": "unittest.bam.bai",
+  "self_uri": "drs://localhost:5000/abc123",
+  "size": 3815192,
+  "created_time": "2019-09-04T00:00:00.0000",
+  "updated_time": "2019-09-04T00:00:00.0000",
+  "version": "0",
+  "mime_type": "application/octet-stream",
+  "checksums": [
+      {
+          "checksum": "05d55a13",
+          "type": "crc32c"
+      },
+      {
+          "checksum": "319973f6a5cd5c952fc42714cda531ec",
+          "type": "md5"
+      }
+  ],
+  "access_methods": [
+      {
+          "type": "https",
+          "access_url": {
+              "url": "http://localhost:5000/download/abc123"
+          },
+          "access_id": null,
+          "region": null
+      }
+  ],
+  "contents": null,
+  "description": "unit test BAMI file",
+  "aliases": [
+      "/download/unittest.bam.bai"
+  ]
+}

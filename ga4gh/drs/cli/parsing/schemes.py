@@ -5,22 +5,23 @@ commands
 """
 
 import click
+from ga4gh.drs.cli.methods import schemes as drsschemes
 
 @click.group()
 def schemes():
-    """view/update supported url schemes"""
+    """view supported url schemes"""
 
     pass
 
 @schemes.command()
-def ls():
-    """Executes the 'drs schemes ls' command after parsing cli args/opts"""
+def ls(**kwargs):
+    """list supported schemes"""
 
-    pass
+    drsschemes.ls(**kwargs)
 
-@schemes.command()
-def update_supported():
-    """Executes the 'drs schemes update-supported' command after parsing args"""
-    
-    pass
+# @schemes.command()
+# def update_supported():
+#     """Executes the 'drs schemes update-supported' command after parsing args"""
+#     
+#     pass
 

@@ -30,7 +30,7 @@ class AccessUrl(object):
     def issue_request(self):
         """Makes request to the specified url using associated headers"""
 
-        requests.get(self.url, headers=self.headers)
+        return requests.get(self.url, headers=self.headers)
 
     def __initialize_headers(self):
         """Initializes value of headers property

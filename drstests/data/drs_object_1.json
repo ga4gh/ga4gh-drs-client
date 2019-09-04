@@ -1,0 +1,35 @@
+{
+    "id": "def456",
+    "name": "unittest.bam",
+    "self_uri": "drs://localhost:5000/def456",
+    "size": 13347442344,
+    "created_time": "2019-09-04T00:00:00.0000",
+    "updated_time": "2019-09-04T00:00:00.0000",
+    "version": "0",
+    "mime_type": "application/octet-stream",
+    "checksums": [
+        {
+            "checksum": "9925b27c",
+            "type": "crc32c"
+        },
+        {
+            "checksum": "7971c71cd0b5a6ad02b25df678c7cb96",
+            "type": "md5"
+        }
+    ],
+    "access_methods": [
+        {
+            "type": "https",
+            "access_url": {
+                "url": "http://localhost:5000/download/def456"
+            },
+            "access_id": null,
+            "region": null
+        }
+    ],
+    "contents": null,
+    "description": "unit test BAM file",
+    "aliases": [
+        "/download/unittest.bam"
+    ]
+}

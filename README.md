@@ -1,5 +1,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://mit-license.org/)
+![Travis (.org)](https://img.shields.io/travis/ga4gh/ga4gh-drs-client?style=flat-square)
 [![Read the Docs](https://img.shields.io/readthedocs/ga4gh-drs-client.svg?style=flat-square)](https://ga4gh-drs-client.readthedocs.io/en/latest/)
+![Coveralls github](https://img.shields.io/coveralls/github/ga4gh/ga4gh-drs-client)
 
 # ga4gh-drs-client
 

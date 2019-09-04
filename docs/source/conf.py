@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'GA4GH DRS Client'
-copyright = '2019, Jeremy Adams'
+copyright = '2019, Global Alliance for Genomics and Health'
 author = 'Jeremy Adams'
 
 
