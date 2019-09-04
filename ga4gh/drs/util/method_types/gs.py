@@ -4,7 +4,6 @@ Contains the GS class, a child of MethodType. GS contains submethods to
 download DRS object bytes according to the Google Storage (gs) url scheme.
 """
 
-import ga4gh.drs.config.globals as gl
 import os
 import re
 import requests

@@ -9,7 +9,7 @@ of an Object, primarily providing the url to access a full Object
 import json
 import re
 import requests
-from ga4gh.drs.config.globals import ACCESS_METHOD_TYPES
+from ga4gh.drs.config.constants import ACCESS_METHOD_TYPES
 from ga4gh.drs.definitions.checksum import Checksum
 from ga4gh.drs.routes.route_object_info import RouteObjectInfo
 from ga4gh.drs.util.functions.url import *

@@ -3,7 +3,7 @@
 Contains main entrypoint method(s) for the 'schemes' command group
 """
 
-import ga4gh.drs.config.globals as gl
+import ga4gh.drs.config.constants as c
 
 def ls(**kwargs):
     """List all supported URI schemes for DRS object download
@@ -14,7 +14,7 @@ def ls(**kwargs):
 
     template = "{key}{spacer}\t{desc}"
 
-    acc_dict = gl.ACCESS_METHOD_TYPES_DESC.copy()
+    acc_dict = c.ACCESS_METHOD_TYPES_DESC.copy()
     keys = sorted(acc_dict.keys())
     acc_dict.update({"Scheme": "Description"})
     keys.insert(0, "Scheme")

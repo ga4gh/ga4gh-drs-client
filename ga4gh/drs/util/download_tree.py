@@ -6,7 +6,6 @@ Also recurses through bundles-within-bundles to get all the single objects
 within a bundle tree.
 """
 
-import ga4gh.drs.config.globals as gl
 import yaml
 from ga4gh.drs.definitions.object import ContentsObject
 from ga4gh.drs.definitions.object import Object

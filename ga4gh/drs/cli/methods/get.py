@@ -4,7 +4,7 @@ Contains main entrypoint method(s) for the 'get' command group
 """
 
 import click
-import ga4gh.drs.config.globals as gl
+import ga4gh.drs.config.constants as c
 import json
 import logging
 import sys
@@ -52,8 +52,8 @@ def get(**kwargs):
             loglevel = 100
         else:
             if kwargs["verbosity"]:
-                loglevel = gl.LOGLEVELS[kwargs["verbosity"]]
-        logger = gl.logger
+                loglevel = c.LOGLEVELS[kwargs["verbosity"]]
+        logger = c.logger
         logger.set_handler(logfile=kwargs["logfile"], loglevel=loglevel)
         logger.debug("command-line arguments: " + str(sanitize(kwargs)))
 
