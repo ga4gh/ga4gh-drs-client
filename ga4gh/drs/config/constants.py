@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Module ga4gh.drs.config.globals.py
+"""Module ga4gh.drs.config.constants.py
 Global settings and constants used by the drs client package
 
 Attributes:

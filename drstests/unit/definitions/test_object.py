@@ -1,5 +1,5 @@
 import json
-from drstests.config.cli_kwargs import *
+from drstests.cli_kwargs import *
 from ga4gh.drs.definitions.object import DRSObject, ContentsObject
 
 cli_kwargs = CLI_KWARGS_0

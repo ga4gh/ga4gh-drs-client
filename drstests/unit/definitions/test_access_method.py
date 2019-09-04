@@ -1,5 +1,5 @@
 import json
-from drstests.config.cli_kwargs import *
+from drstests.cli_kwargs import *
 from ga4gh.drs.definitions.object import DRSObject
 from ga4gh.drs.definitions.access_method import AccessMethod
 
