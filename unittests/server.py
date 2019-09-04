@@ -3,7 +3,7 @@ from flask import Flask, Response, request
 
 app = Flask(__name__)
 
-data_dir = "drstests/data/"
+data_dir = "unittests/testdata/"
 objects_dict = {
     "abc123": "drs_object_0.json",
     "def456": "drs_object_1.json",

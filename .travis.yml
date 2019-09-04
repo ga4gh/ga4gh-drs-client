@@ -9,10 +9,10 @@ install:
   # - python setup.py install
   # - python -m pip install -r requirements_test.txt
 before_script:
-  - export FLASK_APP=drstests/unit/server.py
+  - export FLASK_APP=unittests/server.py
   - flask run &
 script:
-  - python -m pytest --cov=ga4gh/ --cov-report=term-missing drstests/
+  - python -m pytest --cov=ga4gh/ --cov-report=term-missing unittests/
 after_success:
   - coveralls
 after_script:
