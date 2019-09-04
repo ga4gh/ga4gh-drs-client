@@ -5,12 +5,11 @@ install:
   - python -m pip install --upgrade pip
   - python setup.py install
   - python -m pip install -r requirements_test.txt
-  - export PYTHONPATH=`pwd`:$PYTHONPATH
 before_script:
   - export FLASK_APP=drstests/unit/server.py
   - flask run &
 script:
-  - pytest --cov=ga4gh/ --cov-report=term-missing drstests/
+  - python -m pytest --cov=ga4gh/ --cov-report=term-missing drstests/
 after_success:
   - coveralls
 after_script:
