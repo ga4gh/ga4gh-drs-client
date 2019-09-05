@@ -32,6 +32,7 @@ Optional command-line options:
    "-d", "--download", "Flag. If set, download object bytes"
    "-x", "--expand", "Flag. If set, program will recursively traverse inner bundles within the root bundle"
    "-l", "--logfile", "File to which logs should be written"
+   "-M", "--max-threads", "Number of concurrent download threads"
    "-o", "--output-dir", "Directory to write downloaded files"
    "-m", "--output-metdata", "File to write object metadata (printed to stdout by default)"
    "-S", "--silent", "Flag. If set, don't output any messages to console or log file"

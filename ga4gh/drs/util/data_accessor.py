@@ -5,7 +5,10 @@ DRSObject. Attempts to download the full file by all available access methods
 until the download has completed successfully.
 """
 
-import ga4gh.drs.config.constants as c
+# import ga4gh.drs.config.constants as c
+import ga4gh.drs.config.checksum_status as cs
+import ga4gh.drs.config.download_status as ds
+import ga4gh.drs.config.logger as l
 import os
 from ga4gh.drs.definitions.checksum import Checksum
 
@@ -36,12 +39,12 @@ class DataAccessor(object):
         self.drs_obj = drs_obj
         self.cli_kwargs = cli_kwargs
         self.headers = headers
-        self.download_status = c.DownloadStatus.NOT_STARTED
-        self.checksum_status = c.ChecksumStatus.NOT_APPLICABLE
+        self.download_status = ds.DownloadStatus.NOT_STARTED
+        self.checksum_status = cs.ChecksumStatus.NOT_APPLICABLE
         self.checksum_algo = "N/A"
         self.checksum_exp = "N/A"
         self.checksum_obs = "N/A"
-        self.logger = c.logger
+        self.logger = l.logger
     
     def download(self):
         """Attempt byte download by all access methods
@@ -55,7 +58,7 @@ class DataAccessor(object):
         """
 
         # download by any access method has started
-        self.download_status = c.DownloadStatus.STARTED
+        self.download_status = ds.DownloadStatus.STARTED
 
         no_method_msg_template = "{objid} has no valid access methods with " \
             + "which to attempt download. Status: {status}"
@@ -70,20 +73,19 @@ class DataAccessor(object):
         # status is set to 'COMPLETED'
         # if all access methods are exhausted without success, the data
         # accessor's download status is set to 'FAILED'
-        access_method_status = c.DownloadStatus.NOT_STARTED
+        access_method_status = ds.DownloadStatus.NOT_STARTED
         if len(self.drs_obj.access_methods) < 1:
-            access_method_status = c.DownloadStatus.FAILED
+            access_method_status = ds.DownloadStatus.FAILED
             msg = no_method_msg_template.format(objid=self.drs_obj.id,
-                status=c.DOWNLOAD_STATUS[access_method_status])
+                status=ds.DOWNLOAD_STATUS[access_method_status])
             self.logger.debug(msg)
 
         for access_method in self.drs_obj.access_methods:
-            if access_method_status != c.DownloadStatus.COMPLETED:
+            if access_method_status != ds.DownloadStatus.COMPLETED:
                 start_msg = start_msg_template.format(
                     objid=self.drs_obj.id, scheme=access_method.type)
                 self.logger.debug(start_msg)
-                
-                access_method_status = c.DownloadStatus.STARTED
+                access_method_status = ds.DownloadStatus.STARTED
                 access_method.set_data_accessor(self)
                 access_method.download_retry_loop()
                 access_method_status = access_method.download_status
@@ -91,7 +93,7 @@ class DataAccessor(object):
                 end_msg = end_msg_template.format(
                     objid=self.drs_obj.id,
                     scheme=access_method.type, 
-                    status=c.DOWNLOAD_STATUS[access_method_status]
+                    status=ds.DOWNLOAD_STATUS[access_method_status]
                 )
                 self.logger.debug(end_msg)
 
@@ -139,9 +141,9 @@ class DataAccessor(object):
                     "expected": self.checksum_exp, 
                     "observed": self.checksum_obs}
                 self.logger.error(msg.format(**format_dict))
-                self.checksum_status = c.ChecksumStatus.FAILED
+                self.checksum_status = cs.ChecksumStatus.FAILED
             else:
-                self.checksum_status = c.ChecksumStatus.PASSED
+                self.checksum_status = cs.ChecksumStatus.PASSED
 
         # if no suitable hashing algorithm has been found, check status is set
         # to FAILED
@@ -150,7 +152,7 @@ class DataAccessor(object):
                 + "no suitable hashing algorithm found"
             format_dict = {"filepath": filepath}
             self.logger.warning(msg.format(**format_dict))
-            self.checksum_status = c.ChecksumStatus.FAILED
+            self.checksum_status = cs.ChecksumStatus.FAILED
 
     def get_output_file_path(self):
         """Get the path of download file destination on local machine
@@ -176,8 +178,8 @@ class DataAccessor(object):
             self.drs_obj.id,
             self.drs_obj.name if self.drs_obj.name else "N/A",
             self.get_output_file_path(), # outfile
-            c.DOWNLOAD_STATUS[self.download_status],
-            c.CHECKSUM_STATUS[self.checksum_status],
+            ds.DOWNLOAD_STATUS[self.download_status],
+            cs.CHECKSUM_STATUS[self.checksum_status],
             self.checksum_algo,
             self.checksum_exp,
             self.checksum_obs

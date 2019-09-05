@@ -6,7 +6,7 @@ starting, stopping, and checking status of each thread.
 """
 
 import datetime
-import ga4gh.drs.config.constants as c
+import ga4gh.drs.config.download_status as ds
 import threading
 import os
 from concurrent.futures import ThreadPoolExecutor
@@ -36,7 +36,7 @@ class DownloadManager(object):
             self.data_accessors[0].cli_kwargs["output_dir"], 
             "drs_download_report.txt"
         )
-        self.max_workers = 3
+        self.max_workers = cli_kwargs["max_threads"]
     
     def download_thread_func(self, data_accessor):
         """Thread worker function for DataAccessor download
@@ -49,7 +49,7 @@ class DownloadManager(object):
         # execute the checksum validation method if the client has requested
         # it
         data_accessor.download()
-        if data_accessor.download_status == c.DownloadStatus.COMPLETED:
+        if data_accessor.download_status == ds.DownloadStatus.COMPLETED:
             if data_accessor.cli_kwargs["validate_checksum"]:
                 data_accessor.validate_checksum()
 

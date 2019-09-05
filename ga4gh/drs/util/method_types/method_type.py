@@ -6,7 +6,9 @@ access types, or schemes (gs, https, htsget, etc.). MethodType contains methods
 that are common to all specific Access Types/Schemes. 
 """
 
-import ga4gh.drs.config.constants as c
+# import ga4gh.drs.config.constants as c
+import ga4gh.drs.config.download_status as ds
+import ga4gh.drs.config.logger as l
 import os
 import requests
 from functools import wraps
@@ -51,7 +53,7 @@ def DownloadSubmethod():
             """
             
             # initialize submethod status as 'STARTED'
-            submethod_status = c.DownloadStatus.STARTED
+            submethod_status = ds.DownloadStatus.STARTED
             err_message = None
 
             # set up the write config, including output file name, path,
@@ -81,12 +83,12 @@ def DownloadSubmethod():
                 else:
                     raise DownloadSubmethodException(
                         "Neither access_url or access_id is specified")
-                submethod_status = c.DownloadStatus.COMPLETED
+                submethod_status = ds.DownloadStatus.COMPLETED
             except DownloadSubmethodException as e:
-                submethod_status = c.DownloadStatus.FAILED
+                submethod_status = ds.DownloadStatus.FAILED
                 err_message = str(e)
             except Exception as e:
-                submethod_status = c.DownloadStatus.FAILED
+                submethod_status = ds.DownloadStatus.FAILED
                 err_message = str(e)
             
             return [submethod_status, err_message]
@@ -120,7 +122,7 @@ class MethodType(AccessMethod):
         super(MethodType, self).__init__(json, drs_obj)
         self.data_accessor = None
         self.cli_kwargs = cli_kwargs
-        self.download_status = c.DownloadStatus.NOT_STARTED
+        self.download_status = ds.DownloadStatus.NOT_STARTED
         self.download_submethods = []
 
     def download_retry_loop(self):
@@ -138,21 +140,21 @@ class MethodType(AccessMethod):
             + "by submethod {method}. Status: {status}"
         err_msg_template = end_msg_template + ". Message: {message}"
 
-        self.download_status = c.DownloadStatus.STARTED
-        submethod_status = c.DownloadStatus.NOT_STARTED
+        self.download_status = ds.DownloadStatus.STARTED
+        submethod_status = ds.DownloadStatus.NOT_STARTED
         for submethod in self.download_submethods:
-            if submethod_status != c.DownloadStatus.COMPLETED:
+            if submethod_status != ds.DownloadStatus.COMPLETED:
                 start_msg = start_msg_template.format(objid=self.drs_obj.id,
                     scheme=self.type, method=submethod.__name__)
-                c.logger.debug(start_msg)
-
-                submethod_status = c.DownloadStatus.STARTED
+                l.logger.debug(start_msg)
+                
+                submethod_status = ds.DownloadStatus.STARTED
                 submethod_status, err_message = submethod()
 
                 end_msg_d = {
                     "objid": self.drs_obj.id, "scheme": self.type,
                     "method": submethod.__name__,
-                    "status": c.DOWNLOAD_STATUS[submethod_status]
+                    "status": ds.DOWNLOAD_STATUS[submethod_status]
                 }
                 end_msg = ""
                 if not err_message:
@@ -160,7 +162,7 @@ class MethodType(AccessMethod):
                 else:
                     end_msg_d["message"] = err_message
                     end_msg = err_msg_template.format(**end_msg_d)
-                c.logger.debug(end_msg)
+                l.logger.debug(end_msg)
 
         self.download_status = submethod_status
     
