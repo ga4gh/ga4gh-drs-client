@@ -2,7 +2,7 @@ import setuptools
 import codecs
 
 NAME = "ga4gh-drs-client"
-VERSION = "0.1.3"
+VERSION = "0.1.4"
 AUTHOR = "Jeremy Adams"
 EMAIL = "jeremy.adams@ga4gh.org"
 
@@ -29,8 +29,8 @@ setuptools.setup(
     version=VERSION,
     author=AUTHOR,
     author_email=EMAIL,
-    description="A client for accessing data from Data Repository Service "
-        + "(DRS) web services",
+    description="Retrieve omics data from Data Repository Service (DRS) web "
+        + "services",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ga4gh/ga4gh-drs-client",

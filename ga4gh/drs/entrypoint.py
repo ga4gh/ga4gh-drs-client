@@ -10,7 +10,7 @@ from ga4gh.drs.cli.parsing.schemes import schemes
 
 @click.group()
 def main():
-    """Placeholder main method, subgroups/subcommands added to main via click"""
+    """Retrieve omics data from Data Repository Service (DRS) web services"""
 
     pass
 
