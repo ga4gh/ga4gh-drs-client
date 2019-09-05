@@ -2,6 +2,7 @@
 ![Travis (.org)](https://img.shields.io/travis/ga4gh/ga4gh-drs-client?style=flat-square)
 [![Read the Docs](https://img.shields.io/readthedocs/ga4gh-drs-client.svg?style=flat-square)](https://ga4gh-drs-client.readthedocs.io/en/latest/)
 ![Coveralls github](https://img.shields.io/coveralls/github/ga4gh/ga4gh-drs-client)
+![PyPI](https://img.shields.io/pypi/v/ga4gh-drs-client?style=flat-square)
 
 # ga4gh-drs-client
 
