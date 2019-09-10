@@ -1,7 +1,7 @@
 {
     "id": "ghi789",
     "name": "unittest.bundle",
-    "self_uri": "drs://localhost:5000/defghi789",
+    "self_uri": "drs://localhost:5000/bundle0",
     "size": 0,
     "created_time": "2019-09-04T00:00:00.0000",
     "updated_time": "2019-09-04T00:00:00.0000",

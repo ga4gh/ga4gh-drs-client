@@ -21,7 +21,7 @@
         {
             "type": "https",
             "access_url": {
-                "url": "http://localhost:5000/download/def456"
+                "url": "https://localhost:5000/download/def456"
             },
             "access_id": null,
             "region": null

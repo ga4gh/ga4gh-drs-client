@@ -21,7 +21,7 @@ Additional Resources
 --------------------
 
 1. `PyPI <https://pypi.org/project/ga4gh-drs-client/>`_ - The DRS Client is available on the Python Package Index (PyPI)
-2. `Docker <https://hub.docker.com/r/jbadams/ga4gh-drs-client>`_ - The DRS Client can be run through a preconfigured image
+2. `Docker <https://hub.docker.com/r/ga4gh/ga4gh-drs-client>`_ - The DRS Client can be run through a preconfigured image
 
 .. toctree::
    :maxdepth: 2

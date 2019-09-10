@@ -223,6 +223,7 @@ class MethodType(AccessMethod):
         """
 
         headers = None
+        verify = not self.cli_kwargs["suppress_ssl_verify"]
         if self.access_url.headers:
 
             if len(self.access_url.headers) > 0:
@@ -231,7 +232,9 @@ class MethodType(AccessMethod):
                 headers = self.data_accessor.headers
         else:
             headers = self.data_accessor.headers
-        with requests.get(url, headers=headers, stream=True) as r:
+
+        with requests.get(url, headers=headers, verify=verify, 
+            stream=True) as r:
             if http.is_error(r.status_code):
                 raise DownloadSubmethodException(
                     "Request yielded " + str(r.status_code) + " error code "

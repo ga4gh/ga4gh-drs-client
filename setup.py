@@ -2,7 +2,7 @@ import setuptools
 import codecs
 
 NAME = "ga4gh-drs-client"
-VERSION = "0.1.4"
+VERSION = "0.1.5"
 AUTHOR = "Jeremy Adams"
 EMAIL = "jeremy.adams@ga4gh.org"
 

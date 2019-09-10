@@ -9,11 +9,7 @@
   "mime_type": "application/octet-stream",
   "checksums": [
       {
-          "checksum": "05d55a13",
-          "type": "crc32c"
-      },
-      {
-          "checksum": "319973f6a5cd5c952fc42714cda531ec",
+          "checksum": "55202caaf8ce7bd3b37d55713a1e502e",
           "type": "md5"
       }
   ],
@@ -21,7 +17,7 @@
       {
           "type": "https",
           "access_url": {
-              "url": "http://localhost:5000/download/abc123"
+              "url": "https://localhost:5000/download/abc123"
           },
           "access_id": null,
           "region": null

@@ -4,7 +4,7 @@ from ga4gh.drs.definitions.object import DRSObject
 from ga4gh.drs.definitions.access_method import AccessMethod
 
 cli_kwargs = CLI_KWARGS_0
-drs_obj_json = json.load(open("unittests/testdata/drs_object_0.json", "r"))
+drs_obj_json = json.load(open("unittests/testdata/json/drs_object_0.json", "r"))
 drs_obj = DRSObject(drs_obj_json, cli_kwargs)
 
 def test_access_method():

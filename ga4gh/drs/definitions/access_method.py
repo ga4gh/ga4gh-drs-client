@@ -49,7 +49,7 @@ class AccessMethod(object):
         """Initializes value of access_url property"""
 
         if "access_url" in self.json.keys():
-            self.access_url = AccessUrl(self.json["access_url"])
+            self.access_url = AccessUrl(self.json["access_url"], self)
     
     def __set_region(self):
         """Initializes value of region property"""

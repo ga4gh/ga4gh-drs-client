@@ -12,25 +12,32 @@ class AccessUrl(object):
 
     Attributes:
         json (dict): parsed AccessURL JSON, used to set other attributes
+        access_method (AccessMethod): reference to parent AccessMethod
         headers (dict): auth headers required to make the download request
         url (str): fully resolvable URL that can be used to fetch object bytes
     """
     
-    def __init__(self, json):
+    def __init__(self, json, access_method):
         """Instantiates an AccessUrl object
 
         Arguments:
             json (dict): parsed AccessUrl JSON
+            access_method (AccessMethod): reference to parent AccessMethod obj
         """
 
         self.json = json
+        self.access_method = access_method
         self.headers = self.__initialize_headers()
         self.url = self.__initialize_url()
 
     def issue_request(self):
         """Makes request to the specified url using associated headers"""
 
-        return requests.get(self.url, headers=self.headers)
+        drs_obj = self.access_method.drs_obj
+        suppress_ssl_verify = drs_obj.cli_kwargs["suppress_ssl_verify"]
+        verify = not suppress_ssl_verify
+
+        return requests.get(self.url, headers=self.headers, verify=verify)
 
     def __initialize_headers(self):
         """Initializes value of headers property

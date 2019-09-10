@@ -5,5 +5,7 @@ __pycache__
 build/
 dist/
 scripts/*
+unittests/outdata/*
 
 !scripts/*.sh
+!unittests/outdata/.file

@@ -1,0 +1,60 @@
+{
+    "id": "ghi789",
+    "name": "unittest.bundle",
+    "self_uri": "drs://localhost:5000/bundle1",
+    "size": 0,
+    "created_time": "2019-09-04T00:00:00.0000",
+    "updated_time": "2019-09-04T00:00:00.0000",
+    "version": "0",
+    "mime_type": null,
+    "checksums": [
+        {
+            "checksum": "0",
+            "type": "crc32c"
+        }
+    ],
+    "access_methods": null,
+    "contents": [
+        {
+            "name": "inner_bundle",
+            "contents": [
+                {
+                    "name": "unittest.bam",
+                    "id": "def456",
+                    "drs_uri": [
+                        "drs://localhost:5000/def456"
+                    ],
+                    "contents": null
+                },
+                {
+                    "name": "unittest.bam.bai",
+                    "id": "abc123",
+                    "drs_uri": [
+                        "drs://localhost:5000/abc123"
+                    ],
+                    "contents": null
+                }
+            ]
+        },
+        {
+            "name": "unittest.bam.bai",
+            "id": "abc123",
+            "drs_uri": [
+                "drs://localhost:5000/abc123"
+            ],
+            "contents": null
+        },
+        {
+            "name": "unittest.bam",
+            "id": "ghi789",
+            "drs_uri": [
+                "drs://localhost:5000/ghi789"
+            ],
+            "contents": null
+        }
+    ],
+    "description": null,
+    "aliases": [
+        "/download/unittest.bundle"
+    ]
+}

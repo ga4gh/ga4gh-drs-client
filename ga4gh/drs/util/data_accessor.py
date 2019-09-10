@@ -88,6 +88,7 @@ class DataAccessor(object):
                 access_method_status = ds.DownloadStatus.STARTED
                 access_method.set_data_accessor(self)
                 access_method.download_retry_loop()
+                
                 access_method_status = access_method.download_status
                 
                 end_msg = end_msg_template.format(

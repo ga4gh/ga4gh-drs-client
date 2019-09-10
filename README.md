@@ -21,5 +21,5 @@ Please review the [GA4GH DRS Client Documentation](https://ga4gh-drs-client.read
 
 1. [PyPI](https://pypi.org/project/ga4gh-drs-client/) - The DRS Client is 
 available on the Python Package Index (PyPI)
-2. [Docker](https://hub.docker.com/r/jbadams/ga4gh-drs-client) - The DRS Client
+2. [Docker](https://hub.docker.com/r/ga4gh/ga4gh-drs-client) - The DRS Client
 can be run through a preconfigured image
