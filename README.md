@@ -3,7 +3,7 @@
 [![Read the Docs](https://img.shields.io/readthedocs/ga4gh-drs-client.svg?style=flat-square)](https://ga4gh-drs-client.readthedocs.io/en/latest/)
 ![Coveralls github](https://img.shields.io/coveralls/github/ga4gh/ga4gh-drs-client?style=flat-square)
 ![PyPI](https://img.shields.io/pypi/v/ga4gh-drs-client?style=flat-square)
-[![Python 3.6](https://img.shields.io/badge/python-3.5%20|%203.6%20|%203.7-blue.svg?style=flat-square)](https://www.python.org)
+[![Python 3.6](https://img.shields.io/badge/python-3.6%20|%203.7-blue.svg?style=flat-square)](https://www.python.org)
 
 # ga4gh-drs-client
 
