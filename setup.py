@@ -16,12 +16,20 @@ except LookupError:
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+# install_requires = [
+    # "click>=7.0",
+    # "crc32c>=1.7",
+    # "PyYAML>=5.1.2",
+    # "requests>=2.22.0",
+    # "tqdm>=4.35.0"
+# ]
+
 install_requires = [
-    "click>=7.0",
-    "crc32c>=1.7",
-    "PyYAML>=5.1.2",
-    "requests>=2.22.0",
-    "tqdm>=4.35.0"
+    "click",
+    "crc32c",
+    "PyYAML",
+    "requests",
+    "tqdm"
 ]
 
 setuptools.setup(
