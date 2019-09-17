@@ -16,20 +16,12 @@ except LookupError:
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-# install_requires = [
-    # "click>=7.0",
-    # "crc32c>=1.7",
-    # "PyYAML>=5.1.2",
-    # "requests>=2.22.0",
-    # "tqdm>=4.35.0"
-# ]
-
 install_requires = [
-    "click",
-    "crc32c",
-    "PyYAML",
-    "requests",
-    "tqdm"
+    "click>=7.0",
+    "crc32c>=1.7",
+    "PyYAML>=5.1.2",
+    "requests>=2.22.0",
+    "tqdm>=4.35.0"
 ]
 
 setuptools.setup(
@@ -52,7 +44,6 @@ setuptools.setup(
     }
     ,
     classifiers=(
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: MIT License",
