@@ -11,17 +11,20 @@ Attributes:
 """
 
 from ga4gh.drs.util.method_types.gs import GS
+from ga4gh.drs.util.method_types.http import HTTP
 from ga4gh.drs.util.method_types.https import HTTPS
 
 HTTPS_BASE_PATH = "/ga4gh/drs/v1"
 
 ACCESS_METHOD_TYPES = {
     "gs": GS,
-    "https": HTTPS
+    "http": HTTP,
+    "https": HTTPS,
 }
 
 ACCESS_METHOD_TYPES_DESC = {
     "gs": "Google Cloud Storage",
+    "http": "Hypertext Transfer Protocol",
     "https": "Hypertext Transfer Protocol Secure"
 }
 
@@ -32,4 +35,3 @@ class HttpStatusCode(object):
     CREATED = 201
     ACCEPTED = 202
     PARTIAL_CONTENT = 206
-

@@ -5,12 +5,12 @@ DRSObject. Attempts to download the full file by all available access methods
 until the download has completed successfully.
 """
 
-# import ga4gh.drs.config.constants as c
 import ga4gh.drs.config.checksum_status as cs
 import ga4gh.drs.config.download_status as ds
 import ga4gh.drs.config.logger as l
 import os
 from ga4gh.drs.definitions.checksum import Checksum
+from urllib.parse import urlparse
 
 class DataAccessor(object):
     """Manages the byte download of a single DRSObject
@@ -81,9 +81,10 @@ class DataAccessor(object):
             self.logger.debug(msg)
 
         for access_method in self.drs_obj.access_methods:
+            scheme = urlparse(access_method.access_url.url).scheme
             if access_method_status != ds.DownloadStatus.COMPLETED:
                 start_msg = start_msg_template.format(
-                    objid=self.drs_obj.id, scheme=access_method.type)
+                    objid=self.drs_obj.id, scheme=scheme)
                 self.logger.debug(start_msg)
                 access_method_status = ds.DownloadStatus.STARTED
                 access_method.set_data_accessor(self)
@@ -93,7 +94,7 @@ class DataAccessor(object):
                 
                 end_msg = end_msg_template.format(
                     objid=self.drs_obj.id,
-                    scheme=access_method.type, 
+                    scheme=scheme, 
                     status=ds.DOWNLOAD_STATUS[access_method_status]
                 )
                 self.logger.debug(end_msg)
@@ -163,6 +164,7 @@ class DataAccessor(object):
         """
 
         fname = self.drs_obj.name if self.drs_obj.name else self.drs_obj.id
+        fname = os.path.basename(fname)
         dirname = self.cli_kwargs["output_dir"]
         if dirname:
             fname = os.path.join(dirname, fname)
@@ -187,3 +189,22 @@ class DataAccessor(object):
         ]
 
         return "\t".join(fields)
+    
+    def was_successful(self):
+        """Determine if a data accessor's download and validation succeeded
+
+        Returns:
+            (bool): True if successful download/validation
+        """
+
+        # download status must be SUCCESS
+        # if checksum validation was requested, validation status must be PASSED
+        # otherwise, do not check checksum status
+        success = False
+        if self.download_status == ds.DownloadStatus.COMPLETED:
+            if self.cli_kwargs["validate_checksum"]:
+                if self.checksum_status == cs.ChecksumStatus.PASSED:
+                    success = True
+            else:
+                success = True
+        return success

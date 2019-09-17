@@ -139,6 +139,12 @@ def get(**kwargs):
             download_manager.execute_thread_pool()
             logger.info("all downloaded files written to output directory")
             download_manager.write_report()
+            download_success = \
+                False \
+                if False in set([d.was_successful() for d in data_accessors]) \
+                else True
+            if not download_success:
+                exit_code = 2
 
         else:
             logger.info("object/bundle download not requested")

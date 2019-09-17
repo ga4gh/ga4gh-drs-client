@@ -1,0 +1,28 @@
+{
+  "id": "obj6",
+  "name": "unittest.bam.bai",
+  "self_uri": "drs://localhost:5000/obj6",
+  "size": 3815192,
+  "created_time": "2019-09-04T00:00:00.0000",
+  "updated_time": "2019-09-04T00:00:00.0000",
+  "version": "0",
+  "mime_type": "application/octet-stream",
+  "checksums": [
+      {
+          "checksum": "55202caaf8ce7bd3b37d55713a1e502e",
+          "type": "md5"
+      }
+  ],
+  "access_methods": [
+      {
+          "type": "https",
+          "access_id": "rest-api",
+          "region": null
+      }
+  ],
+  "contents": null,
+  "description": "unit test BAMI file",
+  "aliases": [
+      "/download/unittest.bam.bai"
+  ]
+}

@@ -13,9 +13,12 @@ import os
 import requests
 from functools import wraps
 from ga4gh.drs.definitions.access_method import AccessMethod
+from ga4gh.drs.definitions.access_url import AccessUrl
 from ga4gh.drs.exceptions.drs_exceptions import DownloadSubmethodException
+from ga4gh.drs.routes.route_fetch_bytes import RouteFetchBytes
 from ga4gh.drs.util.functions import http
 from tqdm import tqdm
+from urllib.parse import urlparse
 
 def DownloadSubmethod():
     """Get a decorator function for universal file download template
@@ -71,18 +74,10 @@ def DownloadSubmethod():
             }
             
             try:
-                # if AccessMethod already has access url, execute the download 
-                # submethod, otherwise get the access url from the access id,
-                # then execute submethod
-                # if neither is submitted, raise an error
-                # catch any errors, setting this submethod status to FAILED 
-                if method_type_obj.access_id:
-                    pass
-                elif method_type_obj.access_url:
-                    submethod_func(method_type_obj, write_config)
-                else:
-                    raise DownloadSubmethodException(
-                        "Neither access_url or access_id is specified")
+                # Access Id has already been converted to Access Url from the
+                # DRSObject constructor.
+                # execute download submethod based on url scheme
+                submethod_func(method_type_obj, write_config)
                 submethod_status = ds.DownloadStatus.COMPLETED
             except DownloadSubmethodException as e:
                 submethod_status = ds.DownloadStatus.FAILED
@@ -142,17 +137,18 @@ class MethodType(AccessMethod):
 
         self.download_status = ds.DownloadStatus.STARTED
         submethod_status = ds.DownloadStatus.NOT_STARTED
+        scheme = urlparse(self.access_url.url).scheme
         for submethod in self.download_submethods:
             if submethod_status != ds.DownloadStatus.COMPLETED:
                 start_msg = start_msg_template.format(objid=self.drs_obj.id,
-                    scheme=self.type, method=submethod.__name__)
+                    scheme=scheme, method=submethod.__name__)
                 l.logger.debug(start_msg)
                 
                 submethod_status = ds.DownloadStatus.STARTED
                 submethod_status, err_message = submethod()
 
                 end_msg_d = {
-                    "objid": self.drs_obj.id, "scheme": self.type,
+                    "objid": self.drs_obj.id, "scheme": scheme,
                     "method": submethod.__name__,
                     "status": ds.DOWNLOAD_STATUS[submethod_status]
                 }
@@ -194,7 +190,6 @@ class MethodType(AccessMethod):
         oname, ofile, csize, fsize, tchunks = [write_config[k] for k in [
             "oname", "ofile", "csize", "fsize", "tchunks"]]
 
-
         silent = self.data_accessor.cli_kwargs["silent"]
         # supply chunk size to the iterator function
         iterator = iterator_func(chunk_size=csize)
@@ -222,10 +217,9 @@ class MethodType(AccessMethod):
             url (str): request url
         """
 
-        headers = None
+        headers = {}
         verify = not self.cli_kwargs["suppress_ssl_verify"]
         if self.access_url.headers:
-
             if len(self.access_url.headers) > 0:
                 headers = http.header_list_to_dict(self.access_url.headers)
             else:

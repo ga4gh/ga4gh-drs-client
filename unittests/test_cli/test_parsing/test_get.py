@@ -5,18 +5,19 @@ Unit tests for get cli parsing
 
 from click.testing import CliRunner
 from ga4gh.drs.cli.parsing.get import get
-from unittests.cli_kwargs import \
-    ARGS_0, ARGS_1, ARGS_2, ARGS_3, ARGS_4, \
-    ARGS_FAIL_0, ARGS_FAIL_1
+from unittests.cli_kwargs import *
 
 data = [
     {"args": ARGS_0, "exit_code": 0},
     {"args": ARGS_1, "exit_code": 0},
     {"args": ARGS_2, "exit_code": 0},
-    {"args": ARGS_3, "exit_code": 0},
+    {"args": ARGS_3, "exit_code": 2},
     {"args": ARGS_4, "exit_code": 0},
+    {"args": ARGS_5, "exit_code": 0},
     {"args": ARGS_FAIL_0, "exit_code": 1},
-    {"args": ARGS_FAIL_1, "exit_code": 1}
+    {"args": ARGS_FAIL_1, "exit_code": 1},
+    {"args": ARGS_FAIL_2, "exit_code": 1},
+
 ]
 
 def test_get_parsing():

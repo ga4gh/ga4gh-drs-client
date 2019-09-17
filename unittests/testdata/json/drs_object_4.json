@@ -10,7 +10,7 @@
     "checksums": [
         {
             "checksum": "foochecksum",
-            "type": "foomethod"
+            "type": "md5"
         }
     ],
     "access_methods": [

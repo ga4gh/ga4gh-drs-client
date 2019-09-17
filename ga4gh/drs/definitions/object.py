@@ -11,6 +11,7 @@ import re
 import requests
 from ga4gh.drs.config.constants import ACCESS_METHOD_TYPES
 from ga4gh.drs.definitions.checksum import Checksum
+from ga4gh.drs.routes.route_fetch_bytes import RouteFetchBytes
 from ga4gh.drs.routes.route_object_info import RouteObjectInfo
 from ga4gh.drs.util.functions.url import *
 
@@ -93,13 +94,13 @@ class DRSObject(Object):
         """
 
         super(DRSObject, self).__init__(json, cli_kwargs)
+        self.id = self.__initialize_id()
         self.access_methods = self.__initialize_access_methods()
         self.aliases = self.__initialize_aliases()
         self.checksums = self.__initialize_checksums()
         self.contents = self._Object__initialize_contents()
         self.created_time = self.__initialize_created_time()
         self.description = self.__initialize_description()
-        self.id = self.__initialize_id()
         self.mime_type = self.__initialize_mime_type()
         self.name = self.__initialize_name()
         self.self_uri = self.__initialize_self_uri()
@@ -117,13 +118,40 @@ class DRSObject(Object):
         
         # for each JSON element in the 'access_methods' array, create an
         # AccessMethod subclass. The exact subclass instantiated is based on
-        # the "type" property of the AccessMethod JSON 
+        # the url scheme of the access_url's "url" property
+        # if the object has an access_id instead of access_url, then first
+        # convert the access_id to access_url via the access/<access_id> route
         access_methods = []
         if "access_methods" in self.json.keys():
             if self.json["access_methods"]:
                 for access_json in self.json["access_methods"]:
-                    if access_json["type"] in ACCESS_METHOD_TYPES.keys():
-                        access_class = ACCESS_METHOD_TYPES[access_json["type"]]
+
+                    valid_access_url_json = True
+
+                    # issue request for the access_url if access_id provided
+                    if access_json["access_id"]:
+                        kwargs = self.cli_kwargs
+                        route_fetch_bytes = RouteFetchBytes(
+                            kwargs["url"],
+                            self.id,
+                            access_json["access_id"],
+                            suppress_ssl_verify=kwargs["suppress_ssl_verify"],
+                            authtoken=kwargs["authtoken"]
+                        )
+                        response = route_fetch_bytes.issue_request()
+                        # attempt to parse access url json from the response
+                        # to the access_id route
+                        try:
+                            response.raise_for_status()
+                            access_url_json = response.json()
+                            access_json["access_url"] = access_url_json
+                        except Exception as e:
+                            valid_access_url_json = False
+                        
+                    scheme = urlparse(access_json["access_url"]["url"]).scheme
+                    if scheme in ACCESS_METHOD_TYPES.keys() \
+                    and valid_access_url_json:
+                        access_class = ACCESS_METHOD_TYPES[scheme]
                         access_obj = access_class(
                             access_json, self, self.cli_kwargs)
                         access_methods.append(access_obj)
@@ -149,9 +177,10 @@ class DRSObject(Object):
         # creates a Checksum object for each element in the JSON array under
         # "checksums"
         checksums = []
-        for checksum_json in self.json["checksums"]:
-            checksum_obj = Checksum(checksum_json)
-            checksums.append(checksum_obj)
+        if "checksums" in self.json.keys():
+            for checksum_json in self.json["checksums"]:
+                checksum_obj = Checksum(checksum_json)
+                checksums.append(checksum_obj)
 
         return checksums
     
@@ -265,7 +294,7 @@ class ContentsObject(Object):
         self.contents = self._Object__initialize_contents()
         self.drs_uri = self.__initialize_drs_uri()
         self.id = self.__initialize_id()
-        self.name = self.__initialize_name
+        self.name = self.__initialize_name()
         self.is_bundle = self._Object__initialize_is_bundle()
     
     def get_corresponding_object(self):

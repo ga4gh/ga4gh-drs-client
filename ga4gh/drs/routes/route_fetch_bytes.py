@@ -14,7 +14,8 @@ class RouteFetchBytes(Route):
         template (str): fetch bytes route endpoint template
     """
 
-    def __init__(self, base_url, object_id, access_id):
+    def __init__(self, base_url, object_id, access_id, 
+        suppress_ssl_verify=False, authtoken=None):
         """Instantiates a RouteFetchBytes object
 
         Arguments:
@@ -23,7 +24,8 @@ class RouteFetchBytes(Route):
             access_id (str): access id of requested DRS object
         """
 
-        super(RouteFetchBytes, self).__init__(base_url, object_id)
+        super(RouteFetchBytes, self).__init__(base_url, object_id, 
+            suppress_ssl_verify=suppress_ssl_verify, authtoken=authtoken)
         self.set_access_id(access_id)
         self.template = "/objects/{object_id}/access/{access_id}"
     

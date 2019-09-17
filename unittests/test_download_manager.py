@@ -19,7 +19,7 @@ exp_download_statuses = [
     ds.DownloadStatus.COMPLETED,
     ds.DownloadStatus.COMPLETED,
     ds.DownloadStatus.COMPLETED,
-    ds.DownloadStatus.FAILED
+    ds.DownloadStatus.COMPLETED
 ]
 
 def test_download_manager():

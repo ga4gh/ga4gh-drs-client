@@ -1,6 +1,7 @@
 *.egg-info/
 .coverage
 .env
+.vscode
 __pycache__
 build/
 dist/

@@ -29,35 +29,63 @@ class AccessMethod(object):
 
         self.json = json
         self.drs_obj = drs_obj
-        self.access_id = None
-        self.access_url = None
-        self.region = None
-        self.type = None
+        self.access_id = self.__initialize_access_id()
+        self.access_url = self.__initialize_access_url()
+        self.region = self.__initialize_region()
+        self.type = self.__initialize_type()
 
-        self.__set_access_id()
-        self.__set_access_url()
-        self.__set_region()
-        self.__set_type()
+    def set_access_url(self, access_url):
+        """Set the access_url property to a new AccessUrl
+
+        Arguments:
+            access_url (AccessUrl): new access url object
+        """
+
+        self.access_url = access_url
     
-    def __set_access_id(self):
-        """Initializes value of access_id property"""
+    def __initialize_access_id(self):
+        """Initializes value of access_id property
 
-        if "access_id" in self.json.keys():
-            self.access_id = self.json["access_id"]
+        Returns:
+            (str): access id
+        
+        """
+
+        access_id = self.json["access_id"] \
+                    if "access_id" in self.json.keys() \
+                    else None
+        return access_id
     
-    def __set_access_url(self):
-        """Initializes value of access_url property"""
+    def __initialize_access_url(self):
+        """Initializes value of access_url property
 
-        if "access_url" in self.json.keys():
-            self.access_url = AccessUrl(self.json["access_url"], self)
+        Returns:
+            (AccessUrl): access url
+        """
+
+        access_url = AccessUrl(self.json["access_url"], self) \
+                     if "access_url" in self.json.keys() \
+                     else None
+        return access_url
     
-    def __set_region(self):
-        """Initializes value of region property"""
+    def __initialize_region(self):
+        """Initializes value of region property
 
-        if "region" in self.json.keys():
-            self.region = self.json["region"]
+        Returns:
+            (str): region
+        """
+
+        region = self.json["region"] \
+                 if "region" in self.json.keys() \
+                 else None
+        return region
     
-    def __set_type(self):
-        """Initializes value of type property"""
+    def __initialize_type(self):
+        """Initializes value of type property
 
-        self.type = self.json["type"]
+        Returns:
+            (str): type
+        """
+
+        return self.json["type"]
+

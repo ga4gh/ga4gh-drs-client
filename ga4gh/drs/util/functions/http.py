@@ -3,6 +3,8 @@
 Contains helper functions for http-related objects
 """
 
+import re
+
 def is_client_error(sc):
     """Determine if a status code is one of client-series errors
 
@@ -69,6 +71,6 @@ def header_list_to_dict(header_list):
         """
 
         for h in header_list:
-            yield [e.strip() for e in h.split(":")]
+            yield [e.strip().replace(":", "") for e in re.split("\s|:\s", h)]
 
     return {k:v for k,v in generator(header_list)}

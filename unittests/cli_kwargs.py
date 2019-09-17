@@ -23,6 +23,10 @@ ARGS_3.append("ghi789")
 ARGS_4 = [a for a in ARGS_0]
 ARGS_4.remove("-d")
 
+ARGS_5 = [a for a in ARGS_0]
+ARGS_5.remove("abc123")
+ARGS_5.append("obj5")
+
 ARGS_FAIL_0 = [
     "https://nonexistenthost172583467534.com",
     "FOOID"
@@ -33,6 +37,10 @@ ARGS_FAIL_1 = [
     "https://localhost:5000/",
     "FOOID"   
 ]
+
+ARGS_FAIL_2 = [a for a in ARGS_0]
+ARGS_FAIL_2.remove("abc123")
+ARGS_FAIL_2.append("obj6")
 
 CLI_KWARGS_0 = {
     'validate_checksum': True,
