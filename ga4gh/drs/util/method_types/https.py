@@ -15,16 +15,15 @@ class HTTPS(MethodType):
         download_submethods (list): multiple methods to attempt byte download
     """
 
-    def __init__(self, json, drs_obj, cli_kwargs):
+    def __init__(self, json, drs_obj):
         """Instantiates an HTTPS object
 
         Arguments:
             json (dict): parsed AccessMethod JSON, used to set other attributes
             drs_obj (DRSObject): reference to parent DRSObject object
-            cli_kwargs (dict): command-line arguments, options
         """
 
-        super(HTTPS, self).__init__(json, drs_obj, cli_kwargs)
+        super(HTTPS, self).__init__(json, drs_obj)
         self.download_submethods = [
             self.__download_by_https
         ]

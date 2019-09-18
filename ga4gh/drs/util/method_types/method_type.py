@@ -8,10 +8,10 @@ that are common to all specific Access Types/Schemes.
 
 # import ga4gh.drs.config.constants as c
 import ga4gh.drs.config.download_status as ds
-import ga4gh.drs.config.logger as l
 import os
 import requests
 from functools import wraps
+from ga4gh.drs.config.global_state import GLOBALSTATE
 from ga4gh.drs.definitions.access_method import AccessMethod
 from ga4gh.drs.definitions.access_url import AccessUrl
 from ga4gh.drs.exceptions.drs_exceptions import DownloadSubmethodException
@@ -101,22 +101,23 @@ class MethodType(AccessMethod):
     Attributes:
         data_accessor (DataAccessor): DataAccessor managing this MethodType
         cli_kwargs (dict): command-line arguments/options
+        logger (Logger): logger
         download_status (int): current status of DRSObject byte download
         download_submethods (list): multiple methods to attempt byte download
     """
 
-    def __init__(self, json, drs_obj, cli_kwargs):
+    def __init__(self, json, drs_obj):
         """Instantiates a MethodType object
 
         Arguments:
             json (dict): parsed AccessMethod JSON, used to set other attributes
             drs_obj (DRSObject): reference to parent DRSObject object
-            cli_kwargs (dict): command-line arguments/options
         """
 
         super(MethodType, self).__init__(json, drs_obj)
         self.data_accessor = None
-        self.cli_kwargs = cli_kwargs
+        self.cli_kwargs = GLOBALSTATE.get_prop("cli")
+        self.logger = GLOBALSTATE.get_prop("logger")
         self.download_status = ds.DownloadStatus.NOT_STARTED
         self.download_submethods = []
 
@@ -142,7 +143,7 @@ class MethodType(AccessMethod):
             if submethod_status != ds.DownloadStatus.COMPLETED:
                 start_msg = start_msg_template.format(objid=self.drs_obj.id,
                     scheme=scheme, method=submethod.__name__)
-                l.logger.debug(start_msg)
+                self.logger.debug(start_msg)
                 
                 submethod_status = ds.DownloadStatus.STARTED
                 submethod_status, err_message = submethod()
@@ -158,7 +159,7 @@ class MethodType(AccessMethod):
                 else:
                     end_msg_d["message"] = err_message
                     end_msg = err_msg_template.format(**end_msg_d)
-                l.logger.debug(end_msg)
+                self.logger.debug(end_msg)
 
         self.download_status = submethod_status
     
@@ -232,7 +233,7 @@ class MethodType(AccessMethod):
             if http.is_error(r.status_code):
                 raise DownloadSubmethodException(
                     "Request yielded " + str(r.status_code) + " error code "
-                    + "response"
+                    + "response: " + str(r.content) 
                 )
             iterator_func = r.iter_content
             self.download_write_stream(iterator_func, write_config)

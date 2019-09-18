@@ -28,7 +28,7 @@ new_urls = [
 
 drs_json = open("unittests/testdata/json/drs_object_0.json", "r").read()
 drs_dict = json.loads(drs_json)
-drs_obj = DRSObject(drs_dict, CLI_KWARGS_0)
+drs_obj = DRSObject(drs_dict)
 access_method = drs_obj.access_methods[0]
 
 def assert_all_headers(access_url, headers_l):

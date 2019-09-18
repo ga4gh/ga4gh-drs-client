@@ -4,6 +4,8 @@ Contains class definition of global logger
 """
 
 import logging
+from ga4gh.drs.config.global_state import GLOBALSTATE
+from ga4gh.drs.config.loglevels import LOGLEVELS
 
 class Logger(object):
     """Global logger
@@ -24,6 +26,17 @@ class Logger(object):
         self.format = "%(asctime)s\t%(levelname)s\t%(message)s"
         self.formatter = logging.Formatter(self.format)
         self.logger = logging.getLogger(name)
+
+        # set up logger, loglevel set according to verbosity argument, and
+        # silent option. If silent, logger will not output anything
+        kwargs = GLOBALSTATE.get_prop("cli")
+        loglevel = 1
+        if kwargs["silent"]:
+            loglevel = 100
+        else:
+            if kwargs["verbosity"]:
+                loglevel = LOGLEVELS[kwargs["verbosity"]]
+        self.set_handler(logfile=kwargs["logfile"], loglevel=loglevel)
 
     def set_handler(self, logfile=None, loglevel=logging.DEBUG):
         """Set the logger's handler based on requested output location

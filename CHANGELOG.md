@@ -1,5 +1,10 @@
 # Change Log
 
+## version 0.1.6 - 2019-09-18
+
+* prevent downloaded file name collisions by making the write path: ${DATADIR}/${OBJID}/${FILENAME}
+* command-line args, logger, exit code are now part of global state object
+
 ## version 0.1.5 - 2019-09-17
 
 * added method to download object bytes when `access_id` is provided instead of `access_url`

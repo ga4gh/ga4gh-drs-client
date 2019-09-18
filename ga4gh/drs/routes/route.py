@@ -7,16 +7,16 @@ properties and methods of each
 """
 
 import ga4gh.drs.config.constants as c
-import ga4gh.drs.config.logger as l
 import requests
+from ga4gh.drs.config.global_state import GLOBALSTATE
 from ga4gh.drs.exceptions import drs_exceptions
 from ga4gh.drs.util.functions.logging import *
+
 
 class Route(object):
     """Abstract parent of expected routes outlined in the DRS specification
 
     Attributes:
-        logger (Logger): global logger
         props (dict): all properties dictionary
         ssl_verify (bool): if True, perform SSL verification (default)
         authtoken (str): OAuth 2.0 access token
@@ -35,7 +35,6 @@ class Route(object):
             authtoken (str): OAuth 2.0 access token
         """
 
-        self.logger = l.logger
         self.props = {}
         self.set_base_url(base_url)
         self.set_object_id(object_id)
@@ -104,9 +103,10 @@ class Route(object):
         """
 
         url, headers, params = self.construct_request()
-        l.logger.debug("URL: " + url)
-        l.logger.debug("Headers: " + str(sanitize(headers)))
-        l.logger.debug("Request params: " + str(sanitize(params)))
+        logger = GLOBALSTATE.get_prop("logger")
+        logger.debug("URL: " + url)
+        logger.debug("Headers: " + str(sanitize(headers)))
+        logger.debug("Request params: " + str(sanitize(params)))
 
         try:
             return requests.get(url, headers=headers, params=params,

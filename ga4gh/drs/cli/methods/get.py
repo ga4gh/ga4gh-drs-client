@@ -4,12 +4,12 @@ Contains main entrypoint method(s) for the 'get' command group
 """
 
 import click
-import ga4gh.drs.config.logger as l
 import json
 import logging
 import sys
 import traceback
 import urllib3
+from ga4gh.drs.config.global_state import GLOBALSTATE
 from ga4gh.drs.definitions.object import DRSObject
 from ga4gh.drs.exceptions import drs_exceptions as de
 from ga4gh.drs.routes.route_object_info import RouteObjectInfo
@@ -18,6 +18,7 @@ from ga4gh.drs.util.data_accessor import DataAccessor
 from ga4gh.drs.util.download_tree import DownloadTree
 from ga4gh.drs.util.download_manager import DownloadManager
 from ga4gh.drs.util.functions.logging import *
+from ga4gh.drs.util.logger import Logger
 from ga4gh.drs.util.validators.get_cli_validator import GetCliValidator
 
 def get(**kwargs):
@@ -34,27 +35,19 @@ def get(**kwargs):
         kwargs (dict): command-line arguments parsed via Click package
     """
 
+    GLOBALSTATE.set_prop("cli", kwargs)
+    GLOBALSTATE.set_prop("exit_code", 0)
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    exit_code = 0
     logger = None
 
     try:
-
         # validate get command cli args beyond what is handled by click
         # eg. check URL is in valid format 
         validator = GetCliValidator(**kwargs)
         validator.validate_all()
 
-        # set up logger, loglevel set according to verbosity argument, and
-        # silent option. If silent, logger will not output anything
-        loglevel = 1
-        if kwargs["silent"]:
-            loglevel = 100
-        else:
-            if kwargs["verbosity"]:
-                loglevel = l.LOGLEVELS[kwargs["verbosity"]]
-        logger = l.logger
-        logger.set_handler(logfile=kwargs["logfile"], loglevel=loglevel)
+        GLOBALSTATE.set_prop("logger", Logger("drs.logger"))
+        logger = GLOBALSTATE.get_prop("logger")
         logger.debug("command-line arguments: " + str(sanitize(kwargs)))
 
         # log warning if ssl verification is turned off
@@ -92,7 +85,7 @@ def get(**kwargs):
         # or output file
         root_json = json.loads(response.content)
         logger.info("JSON for object " + kwargs["object_id"] + 
-            " successfully retrieved" % kwargs)
+            " successfully retrieved")
         metadata_output = json.dumps(root_json, indent=4) + "\n"
         
         # output metadata to stdout or output file
@@ -117,11 +110,11 @@ def get(**kwargs):
             # if bundle, program needs to find all terminal nodes (objects)
             # in the bundle hierarchy
             data_accessors = []
-            root_object = DRSObject(root_json, kwargs)
+            root_object = DRSObject(root_json)
             if not root_object.is_bundle:
                 logger.info("requested object is a single object")
                 data_accessors.append(
-                    DataAccessor(root_object, kwargs, http_headers))
+                    DataAccessor(root_object, http_headers))
             else:
                 # requested object is a bundle, create the DownloadTree,
                 # which recurses through the bundle, finding all terminal
@@ -131,11 +124,11 @@ def get(**kwargs):
                 download_tree = DownloadTree(root_object)
                 download_tree.recurse_find_leaves(download_tree.drs_object)
                 data_accessors = download_tree.get_data_accessors_for_leaves(
-                    kwargs, http_headers)
+                    headers=http_headers)
             
             # create the download manager, which accepts all the data accessors
             # and initiates/manages download threads for each accessor
-            download_manager = DownloadManager(data_accessors, kwargs)
+            download_manager = DownloadManager(data_accessors)
             download_manager.execute_thread_pool()
             logger.info("all downloaded files written to output directory")
             download_manager.write_report()
@@ -144,7 +137,7 @@ def get(**kwargs):
                 if False in set([d.was_successful() for d in data_accessors]) \
                 else True
             if not download_success:
-                exit_code = 2
+                GLOBALSTATE.set_prop("exit_code", 2)
 
         else:
             logger.info("object/bundle download not requested")
@@ -154,17 +147,19 @@ def get(**kwargs):
             logger.error(str(e))
         else:
             print(str(e))
-        exit_code = 1
+        GLOBALSTATE.set_prop("exit_code", 1)
     except Exception as e:
         if logger:
             logger.error(str(e))
         else:
             print(str(e))
-        exit_code = 1
+        GLOBALSTATE.set_prop("exit_code", 1)
         traceback.print_exc()
     finally:
         if logger:
-            logger.info("exiting with exit code: " + str(exit_code))
+            logger.info("exiting with exit code: " + 
+                str(GLOBALSTATE.get_prop("exit_code")))
         else:
-            print("exiting with exit code: " + str(exit_code))
-        sys.exit(exit_code)
+            print("exiting with exit code: " 
+                + str(GLOBALSTATE.get_prop("exit_code")))
+        sys.exit(GLOBALSTATE.get_prop("exit_code"))

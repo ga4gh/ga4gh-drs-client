@@ -7,8 +7,8 @@ until the download has completed successfully.
 
 import ga4gh.drs.config.checksum_status as cs
 import ga4gh.drs.config.download_status as ds
-import ga4gh.drs.config.logger as l
 import os
+from ga4gh.drs.config.global_state import GLOBALSTATE
 from ga4gh.drs.definitions.checksum import Checksum
 from urllib.parse import urlparse
 
@@ -18,6 +18,7 @@ class DataAccessor(object):
     Attributes:
         drs_obj (DRSObject): reference to DRSObject to be downloaded
         cli_kwargs (dict): cli args/options
+        logger (Logger): logger
         headers (dict): headers to be supplied to download request
         download_status (int): current status of the file download
         checksum_status (int): current status of checksum validation
@@ -27,24 +28,23 @@ class DataAccessor(object):
         logger (Logger): global logger
     """
     
-    def __init__(self, drs_obj, cli_kwargs, headers):
+    def __init__(self, drs_obj, headers):
         """Instantiates a DataAccessor object
 
         Arguments:
             drs_obj (DRSObject): reference to DRSObject
-            cli_kwargs (dict): cli args/options
             headers (dict): headers to be supplied to download request
         """
 
         self.drs_obj = drs_obj
-        self.cli_kwargs = cli_kwargs
+        self.cli_kwargs = GLOBALSTATE.get_prop("cli")
+        self.logger = GLOBALSTATE.get_prop("logger")
         self.headers = headers
         self.download_status = ds.DownloadStatus.NOT_STARTED
         self.checksum_status = cs.ChecksumStatus.NOT_APPLICABLE
         self.checksum_algo = "N/A"
         self.checksum_exp = "N/A"
         self.checksum_obs = "N/A"
-        self.logger = l.logger
     
     def download(self):
         """Attempt byte download by all access methods
@@ -163,9 +163,11 @@ class DataAccessor(object):
             (str): destination of downloaded file
         """
 
+        dirname = os.path.join(self.cli_kwargs["output_dir"], self.drs_obj.id)
+        if not os.path.exists(dirname):
+            os.mkdir(dirname)
         fname = self.drs_obj.name if self.drs_obj.name else self.drs_obj.id
         fname = os.path.basename(fname)
-        dirname = self.cli_kwargs["output_dir"]
         if dirname:
             fname = os.path.join(dirname, fname)
         return fname

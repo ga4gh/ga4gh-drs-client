@@ -1,11 +1,9 @@
 import json
-from unittests.cli_kwargs import *
 from ga4gh.drs.definitions.object import DRSObject, ContentsObject
 
-cli_kwargs = CLI_KWARGS_0
 drs_json_path = "unittests/testdata/json/drs_object_{i}.json"
 drs_func = lambda i: json.load(open(drs_json_path.format(i=str(i)), "r"))
-drs_objs = [DRSObject(drs_func(i), cli_kwargs) for i in range(0, 3)]
+drs_objs = [DRSObject(drs_func(i)) for i in range(0, 3)]
 
 
 def test_drs_object():

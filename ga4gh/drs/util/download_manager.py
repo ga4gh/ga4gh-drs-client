@@ -10,6 +10,7 @@ import ga4gh.drs.config.download_status as ds
 import threading
 import os
 from concurrent.futures import ThreadPoolExecutor
+from ga4gh.drs.config.global_state import GLOBALSTATE
 from ga4gh.drs.util.functions.logging import *
 
 class DownloadManager(object):
@@ -22,21 +23,20 @@ class DownloadManager(object):
         max_workers (int): max threads executing concurrently
     """
 
-    def __init__(self, data_accessors, cli_kwargs):
+    def __init__(self, data_accessors):
         """Instantiates a DownloadManager object
 
         Arguments:
             data_accessors (list): list of instantiated DataAccessors
-            cli_kwargs (dict): command-line arguments/options
         """
 
         self.data_accessors = data_accessors
-        self.cli_kwargs = cli_kwargs
+        self.cli_kwargs = GLOBALSTATE.get_prop("cli")
         self.report_file = os.path.join(
-            self.data_accessors[0].cli_kwargs["output_dir"], 
+            self.cli_kwargs["output_dir"], 
             "drs_download_report.txt"
         )
-        self.max_workers = cli_kwargs["max_threads"]
+        self.max_workers = self.cli_kwargs["max_threads"]
     
     def download_thread_func(self, data_accessor):
         """Thread worker function for DataAccessor download
@@ -69,7 +69,7 @@ class DownloadManager(object):
         """Write the download status report to the output file"""
 
         # report headers include date-time, supplied command-line parameters
-        kwargs = self.data_accessors[0].cli_kwargs
+        kwargs = self.cli_kwargs
         iso_format = "%Y-%m-%dT%H:%M:%S"
 
         header_template = "# DRS v1 Client Download Report\n" \

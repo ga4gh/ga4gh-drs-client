@@ -7,6 +7,7 @@ within a bundle tree.
 """
 
 import yaml
+from ga4gh.drs.config.global_state import GLOBALSTATE
 from ga4gh.drs.definitions.object import ContentsObject
 from ga4gh.drs.definitions.object import Object
 from ga4gh.drs.util.data_accessor import DataAccessor
@@ -46,7 +47,7 @@ class DownloadTree(object):
             else: # ContentsObject refers to a single Object, add it to leaves
                 self.contents_leaves.append(contents_object)
     
-    def get_data_accessors_for_leaves(self, cli_kwargs, headers=None):
+    def get_data_accessors_for_leaves(self, headers=None):
         """Convert all ContentsObjects to DRSObjects
 
         Arguments:
@@ -61,6 +62,11 @@ class DownloadTree(object):
         for contents in self.contents_leaves:
             drs_object = contents.get_corresponding_object()
             if drs_object:
-                da = DataAccessor(drs_object, cli_kwargs, headers)
+                da = DataAccessor(drs_object, headers)
                 data_accessors.append(da)
+            else:
+                logger = GLOBALSTATE.get_prop("logger")
+                logger.error("Could not get DRSObject from ContentsObject "
+                    + "with name: " + contents.name)
+                GLOBALSTATE.set_prop("exit_code", 2)
         return data_accessors
