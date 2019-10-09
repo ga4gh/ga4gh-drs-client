@@ -20,12 +20,20 @@ class Checksum(object):
 
     HASHFUNCS = {
         "md5": hashfunc_md5,
-        "crc32c": hashfunc_crc32c
+        "sha-256": hashfunc_sha256,
+        "sha256": hashfunc_sha256,
+        "SHA256": hashfunc_sha256,
+        "crc32c": hashfunc_crc32c,
+        "etag": hashfunc_md5
     }
 
     RANKED_HASHFUNCS = [
         "md5",
+        "sha-256",
+        "sha256",
+        "SHA256",
         "crc32c",
+        "etag"
     ]
 
     def __init__(self, json):
