@@ -128,7 +128,7 @@ class DRSObject(Object):
                     valid_access_url_json = True
 
                     # issue request for the access_url if access_id provided
-                    if access_json["access_id"]:
+                    if access_json.get("access_id"):
                         kwargs = self.cli_kwargs
                         route_fetch_bytes = RouteFetchBytes(
                             kwargs["url"],
